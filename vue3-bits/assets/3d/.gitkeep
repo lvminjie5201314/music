@@ -1,0 +1,2 @@
+# Keep this directory in git. Place lens.glb / bar.glb / cube.glb here at runtime.
+# Source: react-bits public/assets/3d/*.glb. Missing files fall back to programmatic geometry.

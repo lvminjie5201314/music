@@ -1,0 +1,34 @@
+import { GridScanProps } from './types';
+declare const _default: import('vue').DefineComponent<GridScanProps, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {}, string, import('vue').PublicProps, Readonly<GridScanProps> & Readonly<{}>, {
+    style: Record<string, string>;
+    className: string;
+    chromaticAberration: number;
+    enableWebcam: boolean;
+    showPreview: boolean;
+    modelsPath: string;
+    sensitivity: number;
+    lineThickness: number;
+    linesColor: string;
+    gridScale: number;
+    lineStyle: import('./types').GridScanLineStyle;
+    lineJitter: number;
+    enablePost: boolean;
+    bloomIntensity: number;
+    bloomThreshold: number;
+    bloomSmoothing: number;
+    noiseIntensity: number;
+    scanColor: string;
+    scanOpacity: number;
+    scanDirection: import('./types').GridScanScanDirection;
+    scanSoftness: number;
+    scanGlow: number;
+    scanPhaseTaper: number;
+    scanDuration: number;
+    scanDelay: number;
+    enableGyro: boolean;
+    scanOnClick: boolean;
+    snapBackDelay: number;
+}, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {
+    containerRef: HTMLDivElement;
+}, HTMLDivElement>;
+export default _default;

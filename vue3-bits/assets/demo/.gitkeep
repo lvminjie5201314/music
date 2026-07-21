@@ -1,0 +1,2 @@
+# Keep this directory in git. Place cs1.webp / cs2.webp / cs3.webp here at runtime.
+# Source: react-bits public/assets/demo/*.webp. Missing files fall back to procedural gradients.
