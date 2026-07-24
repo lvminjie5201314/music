@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LvcUI 工具库 - 组件文档</title>
-  <script src="https://unpkg.com/vue@2.7.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue@2.7.16/dist/vue.min.js"></script>
   <link rel="stylesheet" href="./dist/odometer-theme-minimal.css" />
   <script src="./dist/odometer.min.js"></script>
-  <script src="./dist/lvc-ui.js"></script>
+  <script src="./dist/lvc-ui.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
@@ -786,6 +786,30 @@
           <doc-table title="options" :columns="cols.cfg4" :rows="docs['lvcmessage'].options"></doc-table>
         </section>
 
+        <!-- ===== exportToExcel ===== -->
+        <section id="exportexcel" class="section">
+          <h2 class="section-title"><code>exportToExcel</code> Excel 导出</h2>
+          <p class="section-desc">{{ docs['exportexcel'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['exportexcel'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">导出演示</div>
+            <div class="demo-row">
+              <lvc-button type="primary" @click="exportCSV">导出 CSV</lvc-button>
+              <lvc-button type="success" @click="exportXLSX">导出 XLSX</lvc-button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">表头:</span>
+              <span class="demo-value">{{ exportData.headers.join(' | ') }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">数据:</span>
+              <span class="demo-value">{{ exportData.data.length }} 行</span>
+            </div>
+            <div class="output" v-if="exportLog">{{ exportLog }}</div>
+          </div>
+          <doc-table title="参数" :columns="cols.cfg4" :rows="docs['exportexcel'].params"></doc-table>
+        </section>
+
       </main>
     </div>
   </div>
@@ -892,6 +916,7 @@
             { id: 'px2echartsurils', name: 'px2Echarts 像素适配' },
             { id: 'lvcloading', name: 'LvcLoading' },
             { id: 'lvcmessage', name: 'LvcMessage' },
+            { id: 'exportexcel', name: 'exportToExcel 导出' },
           ],
           // 安装 / 快速开始 代码
           installCode: 'npm install lvc-ui',
@@ -1733,6 +1758,64 @@ this.$lvcMessage.error('出错了');`
                 { name: 'message', type: 'String', default: '""', desc: '文本' },
                 { name: 'duration', type: 'Number', default: '2000', desc: '显示时长（ms），0=不自动关闭' }
               ]
+            },
+            'exportexcel': {
+              desc: '导出 Excel/CSV 文件。CSV 格式默认无依赖，XLSX 格式需引入 xlsx-js-style 库（暴露为 window.XLSX），支持列宽、表头合并、单元格样式配置。',
+              examples: [
+                {
+                  lang: 'js', title: '导出 CSV（默认，无依赖）',
+                  code: `// CSV 格式，无需额外依赖
+LvcUI.exportToExcel({
+  fileName: '用户列表',
+  headers: ['姓名', '年龄', '城市'],
+  data: [
+    ['张三', 25, '北京'],
+    ['李四', 30, '上海'],
+    ['王五', 28, '深圳']
+  ],
+  format: 'csv'
+}).then(() => {
+  console.log('CSV 导出成功');
+});`
+                },
+                {
+                  lang: 'html', title: '导出 XLSX（需引入 xlsx-js-style）',
+                  code: `<!-- 先引入 xlsx-js-style 库（暴露全局 window.XLSX） -->
+<script src="https://unpkg.com/xlsx-js-style/dist/xlsx.bundle.js"><\/script>
+
+<script>
+LvcUI.exportToExcel({
+  fileName: '销售报表',
+  headers: ['区域', 'Q1', 'Q2', 'Q3', 'Q4'],
+  data: [
+    ['华北', 120, 150, 180, 200],
+    ['华南', 200, 220, 240, 260]
+  ],
+  format: 'xlsx',
+  colWidth: { 1: 20, 2: 12, 3: 12, 4: 12, 5: 12 },
+  headerMerges: [
+    { row: 0, col: 1, rowspan: 1, colspan: 4, value: '季度销售（万元）' }
+  ],
+  cellStyle: {
+    alignment: { vertical: 'center', horizontal: 'center' },
+    font: { name: 'Calibri', sz: 11, bold: false },
+    fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
+  }
+}).then(() => {
+  console.log('XLSX 导出成功');
+});
+<\/script>`
+                }
+              ],
+              params: [
+                { name: 'fileName', type: 'String', default: '"导出数据"', desc: '导出文件名（不含扩展名）' },
+                { name: 'headers', type: 'Array', default: '-', desc: '表头数组（最后一行表头）' },
+                { name: 'data', type: 'Array', default: '-', desc: '二维数据数组，每行为一条记录' },
+                { name: 'format', type: 'String', default: '"csv"', desc: '导出格式：csv / xlsx' },
+                { name: 'colWidth', type: 'Object', default: '-', desc: '列宽配置（仅 xlsx 有效，key 从 1 开始，如 {1: 50, 3: 100}）' },
+                { name: 'headerMerges', type: 'Array', default: '-', desc: '表头合并配置（仅 xlsx 有效）{ row, col, rowspan, colspan, value }' },
+                { name: 'cellStyle', type: 'Object', default: '-', desc: '单元格样式配置（仅 xlsx 有效）含 alignment / font / fill' }
+              ]
             }
           },
           // button
@@ -1817,6 +1900,17 @@ this.$lvcMessage.error('出错了');`
           pxInput: 14,
           winW: window.innerWidth,
           winH: window.innerHeight,
+          // exportExcel
+          exportData: {
+            fileName: '用户列表',
+            headers: ['姓名', '年龄', '城市'],
+            data: [
+              ['张三', 25, '北京'],
+              ['李四', 30, '上海'],
+              ['王五', 28, '深圳']
+            ]
+          },
+          exportLog: '',
         };
       },
       computed: {
@@ -2076,6 +2170,50 @@ this.$lvcMessage.error('出错了');`
         msgWarning() { LvcUI.LvcMessage.warning('请注意风险'); },
         msgInfo() { LvcUI.LvcMessage.info('这是一条提示信息'); },
         msgError() { LvcUI.LvcMessage.error('操作失败，请重试'); },
+        // exportExcel
+        async exportCSV() {
+          if (typeof LvcUI === 'undefined' || !LvcUI.exportToExcel) {
+            this.exportLog = 'exportToExcel 不可用';
+            return;
+          }
+          try {
+            await LvcUI.exportToExcel({
+              fileName: this.exportData.fileName,
+              headers: this.exportData.headers,
+              data: this.exportData.data,
+              format: 'csv'
+            });
+            this.exportLog = `[exportToExcel] CSV 导出成功：${this.exportData.fileName}.csv`;
+          } catch (e) {
+            this.exportLog = `[exportToExcel] 导出失败: ${e.message}`;
+          }
+        },
+        async exportXLSX() {
+          if (typeof LvcUI === 'undefined' || !LvcUI.exportToExcel) {
+            this.exportLog = 'exportToExcel 不可用';
+            return;
+          }
+          // XLSX 格式依赖外部 xlsx-js-style 库；不存在时给出友好提示，但仍尝试调用以让用户看到效果
+          if (typeof window.XLSX === 'undefined') {
+            LvcUI.LvcMessage.warning('请先引入 xlsx-js-style 库');
+          }
+          try {
+            await LvcUI.exportToExcel({
+              fileName: this.exportData.fileName,
+              headers: this.exportData.headers,
+              data: this.exportData.data,
+              format: 'xlsx',
+              colWidth: { 1: 20, 2: 12, 3: 16 },
+              cellStyle: {
+                alignment: { vertical: 'center', horizontal: 'center' },
+                font: { name: 'Calibri', sz: 11, bold: false }
+              }
+            });
+            this.exportLog = `[exportToExcel] XLSX 导出成功：${this.exportData.fileName}.xlsx`;
+          } catch (e) {
+            this.exportLog = `[exportToExcel] 导出失败: ${e.message}`;
+          }
+        },
       },
       beforeDestroy() {
         if (this.topoAnimId) cancelAnimationFrame(this.topoAnimId);
