@@ -1,13 +1,2087 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LVC-UI · Vue 2 组件演示台</title>
-    <script type="module" crossorigin src="./assets/index-BIUXMT4Z.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Dz3ovlwG.css">
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LvcUI 工具库 - 组件文档</title>
+  <script src="https://unpkg.com/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="./dist/odometer-theme-minimal.css" />
+  <script src="./dist/odometer.min.js"></script>
+  <script src="./dist/lvc-ui.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #0b1a2a;
+      color: #cfefff;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    /* ===== 布局 ===== */
+    .app { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: #0d2339;
+      border-right: 1px solid #1e4469;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
+    .main {
+      flex: 1;
+      margin-left: 240px;
+      padding: 32px 40px 100px;
+      max-width: 1180px;
+    }
+    /* ===== 侧边栏 ===== */
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #12bbed;
+      border-bottom: 1px solid #1e4469;
+      letter-spacing: 1px;
+    }
+    .logo span { color: #cfefff; font-size: 14px; font-weight: 400; }
+    .nav-group { padding: 12px 0; border-bottom: 1px solid rgba(30,68,105,0.5); }
+    .nav-group-title {
+      padding: 4px 24px;
+      font-size: 12px;
+      color: #5d758c;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .nav-item {
+      display: block;
+      padding: 8px 24px;
+      color: #8ab4d4;
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { color: #fff; background: rgba(18,187,237,0.08); }
+    .nav-item.active { color: #12bbed; border-left-color: #12bbed; background: rgba(18,187,237,0.05); }
+    /* ===== 内容区 ===== */
+    .section { margin-bottom: 56px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #1e4469;
+    }
+    .section-title code {
+      font-size: 18px;
+      color: #12bbed;
+      background: none;
+      font-family: "Fira Code", "Consolas", monospace;
+    }
+    .section-desc { color: #8ab4d4; margin-bottom: 20px; font-size: 14px; line-height: 1.7; }
+    .sub-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #cfefff;
+      margin: 24px 0 10px;
+    }
+    .sub-title:first-child { margin-top: 0; }
+    /* ===== 卡片 ===== */
+    .demo-card {
+      background: #0d2339;
+      border: 1px solid #1e4469;
+      border-radius: 8px;
+      padding: 22px;
+      margin-top: 16px;
+    }
+    .demo-card + .demo-card { margin-top: 16px; }
+    .demo-card-title {
+      font-size: 13px;
+      color: #5d758c;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .demo-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+    .demo-row:last-child { margin-bottom: 0; }
+    .demo-label { color: #8ab4d4; font-size: 13px; min-width: 80px; }
+    .demo-value { color: #12bbed; font-size: 13px; font-family: "Fira Code", monospace; }
+    /* ===== 代码块（带复制） ===== */
+    .code-wrap {
+      background: #07111e;
+      border: 1px solid #1e4469;
+      border-left: 3px solid #12bbed;
+      border-radius: 6px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .code-head {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      background: #0a1a2c;
+      border-bottom: 1px solid #1e4469;
+    }
+    .code-lang {
+      font-size: 11px;
+      color: #5d758c;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: "Fira Code", monospace;
+    }
+    .code-title { font-size: 12px; color: #8ab4d4; margin-left: 10px; }
+    .copy-btn {
+      margin-left: auto;
+      background: rgba(18,187,237,0.12);
+      color: #12bbed;
+      border: 1px solid rgba(18,187,237,0.3);
+      border-radius: 4px;
+      padding: 2px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: rgba(18,187,237,0.28); color: #fff; }
+    .copy-btn.copied { background: rgba(76,175,80,0.2); color: #4caf50; border-color: rgba(76,175,80,0.45); }
+    .code-pre {
+      margin: 0;
+      padding: 14px 16px;
+      font-family: "Fira Code", "Consolas", "Courier New", monospace;
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: #cfefff;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .code-pre code { font-family: inherit; color: inherit; background: none; }
+    /* ===== 文档表格 ===== */
+    .block-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin: 28px 0 12px;
+      padding-left: 10px;
+      border-left: 3px solid #12bbed;
+    }
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      border: 1px solid #1e4469;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .doc-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #0a1a2c;
+      color: #12bbed;
+      border-bottom: 1px solid #1e4469;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .doc-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(30,68,105,0.4);
+      color: #cfefff;
+      vertical-align: top;
+    }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tr:hover td { background: rgba(18,187,237,0.04); }
+    .doc-table .c-name { color: #ffcb6b; font-family: "Fira Code", monospace; white-space: nowrap; }
+    .doc-table .c-type { color: #c792ea; font-family: "Fira Code", monospace; white-space: nowrap; }
+    .doc-table .c-default { color: #c3e88d; font-family: "Fira Code", monospace; white-space: nowrap; }
+    .doc-table .c-desc { color: #b9d6f0; }
+    /* ===== 通用元素 ===== */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .badge-prop { background: rgba(18,187,237,0.15); color: #12bbed; }
+    .badge-event { background: rgba(255,152,0,0.15); color: #ff9800; }
+    .badge-slot { background: rgba(76,175,80,0.15); color: #4caf50; }
+    .note { color: #8ab4d4; font-size: 13px; margin: 8px 0 0; }
+    /* ===== 顶部 hero ===== */
+    .hero {
+      background: linear-gradient(135deg, #0d2339 0%, #0b1a2a 100%);
+      border: 1px solid #1e4469;
+      border-radius: 12px;
+      padding: 48px 40px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 40px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
+    .hero h1 span { color: #12bbed; }
+    .hero .ver {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 14px;
+      color: #12bbed;
+      background: rgba(18,187,237,0.12);
+      border: 1px solid rgba(18,187,237,0.3);
+      border-radius: 12px;
+      padding: 2px 10px;
+      vertical-align: middle;
+    }
+    .hero p { color: #8ab4d4; font-size: 16px; margin-bottom: 8px; }
+    .hero-stats { display: flex; justify-content: center; gap: 48px; margin-top: 28px; }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 30px; font-weight: 700; color: #12bbed; }
+    .hero-stat-label { font-size: 12px; color: #5d758c; margin-top: 4px; }
+    /* ===== 工具按钮 ===== */
+    .demo-btn {
+      padding: 6px 16px;
+      background: #12bbed;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .demo-btn:hover { background: #0ea8d4; }
+    .demo-btn.outline { background: transparent; border: 1px solid #1e4469; color: #8ab4d4; }
+    .demo-btn.outline:hover { border-color: #12bbed; color: #12bbed; }
+    /* ===== 输出区域 ===== */
+    .output {
+      background: #07111e;
+      border: 1px solid #1e4469;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-family: "Fira Code", monospace;
+      font-size: 12px;
+      color: #c3e88d;
+      min-height: 28px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    /* ===== 响应式 ===== */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 20px 16px 80px; }
+      .menu-toggle { display: block !important; }
+      .hero { padding: 32px 20px; }
+      .hero h1 { font-size: 30px; }
+      .hero-stats { gap: 24px; }
+    }
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 200;
+      background: #12bbed;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button class="menu-toggle" @click="sidebarOpen = !sidebarOpen">菜单</button>
+    <div class="app">
+      <!-- ===== 侧边栏 ===== -->
+      <aside class="sidebar" :class="{ open: sidebarOpen }" @click="sidebarOpen = false">
+        <div class="logo">LvcUI <span>v1.0.0</span></div>
+        <div class="nav-group">
+          <div class="nav-group-title">开始</div>
+          <a class="nav-item" :class="{active: active==='intro'}" href="#intro" @click.prevent="goSection('intro')">介绍</a>
+          <a class="nav-item" :class="{active: active==='install'}" href="#install" @click.prevent="goSection('install')">安装</a>
+          <a class="nav-item" :class="{active: active==='quickstart'}" href="#quickstart" @click.prevent="goSection('quickstart')">快速开始</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">组件</div>
+          <a v-for="c in components" :key="c.id" class="nav-item" :class="{active: active===c.id}" :href="'#'+c.id" @click.prevent="goSection(c.id)">{{ c.name }}</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">工具</div>
+          <a v-for="t in tools" :key="t.id" class="nav-item" :class="{active: active===t.id}" :href="'#'+t.id" @click.prevent="goSection(t.id)">{{ t.name }}</a>
+        </div>
+      </aside>
+
+      <!-- ===== 主内容 ===== -->
+      <main class="main">
+
+        <!-- ===== 介绍 ===== -->
+        <section id="intro" class="section">
+          <div class="hero">
+            <h1>Lvc<span>UI</span><span class="ver">v1.0.0</span></h1>
+            <p>LVC 工具库 — Vue 2.x 组件 + 工具集合 · UMD 单文件打包</p>
+            <p style="font-size:13px;">面向大屏 / 可视化 / 后台管理场景，全部组件和工具打包为单个 UMD 文件，一次引入即可使用。</p>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-num">12</div>
+                <div class="hero-stat-label">组件</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">9</div>
+                <div class="hero-stat-label">工具</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">128KB</div>
+                <div class="hero-stat-label">压缩后</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 安装 ===== -->
+        <section id="install" class="section">
+          <h2 class="section-title">安装</h2>
+          <p class="section-desc">peerDependencies：需要项目已安装 Vue 2.6+ / 2.7。</p>
+          <code-block :code="installCode" lang="bash"></code-block>
+        </section>
+
+        <!-- ===== 快速开始 ===== -->
+        <section id="quickstart" class="section">
+          <h2 class="section-title">快速开始</h2>
+          <p class="section-desc">注册后即可在模板中使用所有 <code style="color:#12bbed;">lvc-*</code> 组件。</p>
+          <div class="sub-title">ES Module（推荐）</div>
+          <code-block :code="qsES" lang="js"></code-block>
+          <div class="sub-title">CommonJS</div>
+          <code-block :code="qsCJS" lang="js"></code-block>
+          <div class="sub-title">浏览器 &lt;script&gt; 引入</div>
+          <code-block :code="qsScript" lang="html"></code-block>
+          <div class="sub-title">使用示例</div>
+          <code-block :code="qsUsage" lang="html"></code-block>
+        </section>
+
+        <!-- ===== lvc-button ===== -->
+        <section id="lvc-button" class="section">
+          <h2 class="section-title"><code>&lt;lvc-button&gt;</code> 按钮组件</h2>
+          <p class="section-desc">{{ docs['lvc-button'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-button'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">基础用法</div>
+            <div class="demo-row">
+              <lvc-button type="default">默认</lvc-button>
+              <lvc-button type="primary">主要</lvc-button>
+              <lvc-button type="success">成功</lvc-button>
+              <lvc-button type="warning">警告</lvc-button>
+              <lvc-button type="danger">危险</lvc-button>
+              <lvc-button type="info">信息</lvc-button>
+            </div>
+            <div class="demo-row">
+              <lvc-button type="primary" plain>朴素</lvc-button>
+              <lvc-button type="success" round>圆角</lvc-button>
+              <lvc-button type="danger" circle>圆</lvc-button>
+              <lvc-button type="primary" loading>加载中</lvc-button>
+              <lvc-button type="info" disabled>禁用</lvc-button>
+            </div>
+            <div class="demo-row">
+              <lvc-button type="primary" icon="lvc-icon-edit">编辑</lvc-button>
+              <lvc-button type="primary" @click="btnClick($event)">点击事件</lvc-button>
+              <span class="demo-value" v-if="btnClickCount">点击了 {{ btnClickCount }} 次</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-button'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-button'].events"></doc-table>
+          <doc-table title="Slots" :columns="cols.slots" :rows="docs['lvc-button'].slots"></doc-table>
+        </section>
+
+        <!-- ===== lvc-switch ===== -->
+        <section id="lvc-switch" class="section">
+          <h2 class="section-title"><code>&lt;lvc-switch&gt;</code> 开关组件</h2>
+          <p class="section-desc">{{ docs['lvc-switch'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-switch'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">基础用法</div>
+            <div class="demo-row">
+              <span class="demo-label">默认:</span>
+              <lvc-switch v-model="sw1" />
+              <span class="demo-value">{{ sw1 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">自定义色:</span>
+              <lvc-switch v-model="sw2" :active-color="'#00e5ff'" :inactive-color="'#333'" :width="40" :height="22" />
+              <span class="demo-value">{{ sw2 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用:</span>
+              <lvc-switch v-model="sw3" disabled />
+              <span class="demo-value">{{ sw3 }}</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-switch'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-switch'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-odometer ===== -->
+        <section id="lvc-odometer" class="section">
+          <h2 class="section-title"><code>&lt;lvc-odometer&gt;</code> 数字滚动</h2>
+          <p class="section-desc">{{ docs['lvc-odometer'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-odometer'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">数值变化触发滚动</div>
+            <div class="demo-row">
+              <span class="demo-label">当前值:</span>
+              <span class="demo-value" style="font-size:20px;color:#12bbed;">{{ odoVal }}</span>
+              <lvc-button type="primary" @click="odoVal = Math.floor(Math.random()*10000)">随机变化</lvc-button>
+              <span class="demo-value" style="color:#5d758c;">（需引入 odometer.js）</span>
+            </div>
+            <lvc-odometer :value="odoVal" :duration="1000" unit="" />
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-odometer'].props"></doc-table>
+          <doc-table title="Slots" :columns="cols.slots" :rows="docs['lvc-odometer'].slots"></doc-table>
+        </section>
+
+        <!-- ===== lvc-load-more ===== -->
+        <section id="lvc-load-more" class="section">
+          <h2 class="section-title"><code>&lt;lvc-load-more&gt;</code> 滚动加载</h2>
+          <p class="section-desc">{{ docs['lvc-load-more'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-load-more'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">列表滚动加载</div>
+            <div style="height:200px;overflow-y:auto;border:1px solid #1e4469;border-radius:4px;padding:8px;">
+              <div v-for="(item, i) in loadList" :key="i" style="padding:8px;border-bottom:1px solid rgba(30,68,105,0.3);">
+                列表项 {{ item }}
+              </div>
+              <lvc-load-more :loading="loadLoading" :finished="loadFinished" @load="loadMore" />
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-load-more'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-load-more'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-select ===== -->
+        <section id="lvc-select" class="section">
+          <h2 class="section-title"><code>&lt;lvc-select&gt;</code> 下拉选择</h2>
+          <p class="section-desc">{{ docs['lvc-select'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-select'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">基础用法</div>
+            <div class="demo-row">
+              <span class="demo-label">选择:</span>
+              <lvc-select v-model="selVal" :options="selOpts" placeholder="请选择" clearable />
+              <span class="demo-value">{{ selVal }}</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-select'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-select'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-table ===== -->
+        <section id="lvc-table" class="section">
+          <h2 class="section-title"><code>&lt;lvc-table&gt;</code> 表格</h2>
+          <p class="section-desc">{{ docs['lvc-table'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-table'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">基础表格</div>
+            <lvc-table :data="tableData" :columns="tableColumns" selection stripe
+                       @selection-change="onTableSel" @sort-change="onTableSort">
+              <template #status="{ row }">
+                <span :style="{ color: row.status === '在线' ? '#4caf50' : '#f44336' }">● {{ row.status }}</span>
+              </template>
+            </lvc-table>
+            <div class="output" v-if="tableSelLog">选中: {{ tableSelLog }}</div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-table'].props"></doc-table>
+          <doc-table title="columns 配置" :columns="cols.tableCols" :rows="docs['lvc-table'].columnsCfg"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-table'].events"></doc-table>
+          <doc-table title="Scoped Slots" :columns="cols.scopedSlots" :rows="docs['lvc-table'].scopedSlots"></doc-table>
+        </section>
+
+        <!-- ===== lvc-date-picker ===== -->
+        <section id="lvc-date-picker" class="section">
+          <h2 class="section-title"><code>&lt;lvc-date-picker&gt;</code> 日期选择器</h2>
+          <p class="section-desc">{{ docs['lvc-date-picker'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-date-picker'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-label">单日期:</span>
+              <lvc-date-picker v-model="dateVal1" type="date" />
+              <span class="demo-value">{{ dateVal1 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">日期时间:</span>
+              <lvc-date-picker v-model="dateVal2" type="datetime" />
+              <span class="demo-value">{{ dateVal2 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">日期范围:</span>
+              <lvc-date-picker v-model="dateVal3" type="daterange" />
+              <span class="demo-value">{{ dateVal3 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">日期时间范围:</span>
+              <lvc-date-picker v-model="dateVal4" type="datetimerange" />
+              <span class="demo-value">{{ dateVal4 }}</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-date-picker'].props"></doc-table>
+          <doc-table title="type 取值" :columns="cols.typeValues" :rows="docs['lvc-date-picker'].typeValues"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-date-picker'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-time-picker ===== -->
+        <section id="lvc-time-picker" class="section">
+          <h2 class="section-title"><code>&lt;lvc-time-picker&gt;</code> 时间选择器</h2>
+          <p class="section-desc">{{ docs['lvc-time-picker'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-time-picker'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-label">选择时间:</span>
+              <lvc-time-picker v-model="timeVal" />
+              <span class="demo-value">{{ timeVal }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">禁用:</span>
+              <lvc-time-picker v-model="timeVal2" disabled />
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-time-picker'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-time-picker'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-year-picker ===== -->
+        <section id="lvc-year-picker" class="section">
+          <h2 class="section-title"><code>&lt;lvc-year-picker&gt;</code> 年份选择器</h2>
+          <p class="section-desc">{{ docs['lvc-year-picker'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-year-picker'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-label">单选:</span>
+              <lvc-year-picker v-model="yearVal1" type="year" />
+              <span class="demo-value">{{ yearVal1 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">范围:</span>
+              <lvc-year-picker v-model="yearVal2" type="yearrange" :year-range="5" />
+              <span class="demo-value">{{ yearVal2 }}</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-year-picker'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-year-picker'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-month-picker ===== -->
+        <section id="lvc-month-picker" class="section">
+          <h2 class="section-title"><code>&lt;lvc-month-picker&gt;</code> 月份选择器</h2>
+          <p class="section-desc">{{ docs['lvc-month-picker'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-month-picker'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-label">单选:</span>
+              <lvc-month-picker v-model="monthVal1" type="month" />
+              <span class="demo-value">{{ monthVal1 }}</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">范围:</span>
+              <lvc-month-picker v-model="monthVal2" type="monthrange" />
+              <span class="demo-value">{{ monthVal2 }}</span>
+            </div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-month-picker'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-month-picker'].events"></doc-table>
+        </section>
+
+        <!-- ===== lvc-tree ===== -->
+        <section id="lvc-tree" class="section">
+          <h2 class="section-title"><code>&lt;lvc-tree&gt;</code> 树形控件</h2>
+          <p class="section-desc">{{ docs['lvc-tree'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-tree'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">基础树 + 复选框</div>
+            <div class="demo-row" style="margin-bottom:16px;">
+              <input v-model="treeFilter" placeholder="过滤节点..." @input="onTreeFilter"
+                     style="background:#07111e;border:1px solid #1e4469;color:#fff;padding:6px 10px;border-radius:4px;outline:none;font-size:13px;" />
+              <lvc-button type="primary" @click="getTreeChecked">获取勾选</lvc-button>
+            </div>
+            <div style="background:#07111e;border:1px solid #1e4469;border-radius:4px;padding:12px;max-height:300px;overflow-y:auto;">
+              <lvc-tree ref="demoTree" :data="treeData" :show-checkbox="true" :max-check="10"
+                        :filter-node-method="treeFilterFn" @select="onTreeSelect" @check-change="onTreeCheck" />
+            </div>
+            <div class="output" v-if="treeLog">{{ treeLog }}</div>
+          </div>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-tree'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-tree'].events"></doc-table>
+          <doc-table title="Methods（通过 ref 调用）" :columns="cols.method4" :rows="docs['lvc-tree'].methods"></doc-table>
+        </section>
+
+        <!-- ===== lvc-dialog ===== -->
+        <section id="lvc-dialog" class="section">
+          <h2 class="section-title"><code>&lt;lvc-dialog&gt;</code> 对话框</h2>
+          <p class="section-desc">{{ docs['lvc-dialog'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvc-dialog'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">模板用法</div>
+            <div class="demo-row">
+              <lvc-button type="primary" @click="dialogVisible = true">打开对话框</lvc-button>
+            </div>
+            <lvc-dialog :visible.sync="dialogVisible" title="编辑信息" @confirm="onDialogConfirm">
+              <div style="padding:8px 0;">
+                <p style="color:#8ab4d4;margin-bottom:12px;">这是一个自定义内容的对话框。</p>
+                <input v-model="dialogInput" placeholder="输入内容..."
+                       style="width:100%;background:#07111e;border:1px solid #1e4469;color:#fff;padding:8px 12px;border-radius:4px;outline:none;" />
+              </div>
+            </lvc-dialog>
+          </div>
+          <div class="demo-card">
+            <div class="demo-card-title">命令式 API <span class="badge badge-event">lvcDialog.show()</span></div>
+            <div class="demo-row">
+              <lvc-button type="primary" @click="showCmdDialog">命令式弹窗</lvc-button>
+              <lvc-button type="danger" @click="showConfirmDialog">确认删除</lvc-button>
+            </div>
+          </div>
+          <code-block v-for="(ex, i) in docs['lvc-dialog'].cmdExamples" :key="'cmd'+i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <doc-table title="Attributes" :columns="cols.props" :rows="docs['lvc-dialog'].props"></doc-table>
+          <doc-table title="Events" :columns="cols.events" :rows="docs['lvc-dialog'].events"></doc-table>
+          <doc-table title="Slots" :columns="cols.slots" :rows="docs['lvc-dialog'].slots"></doc-table>
+          <doc-table title="lvcDialog options" :columns="cols.cfg3" :rows="docs['lvc-dialog'].cmdOptions"></doc-table>
+        </section>
+
+        <!-- ===== Bus ===== -->
+        <section id="bus" class="section">
+          <h2 class="section-title">Bus 跨窗口通讯总线</h2>
+          <p class="section-desc">{{ docs['bus'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['bus'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">事件监听 / 触发 / 请求-响应</div>
+            <div class="demo-row">
+              <lvc-button type="primary" @click="busEmit">触发 "test" 事件</lvc-button>
+              <lvc-button class="outline" @click="busRequest">请求 "getTime"</lvc-button>
+            </div>
+            <div class="output" v-if="busLog">{{ busLog }}</div>
+          </div>
+          <doc-table title="API" :columns="cols.method4" :rows="docs['bus'].api"></doc-table>
+        </section>
+
+        <!-- ===== createFetch ===== -->
+        <section id="createfetch" class="section">
+          <h2 class="section-title">createFetch HTTP 请求封装</h2>
+          <p class="section-desc">{{ docs['createfetch'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['createfetch'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">创建实例 + loading 监听</div>
+            <div class="demo-row">
+              <lvc-button type="primary" @click="testFetch">发起 GET 请求</lvc-button>
+              <span class="demo-value" v-if="fetchLoading">loading: {{ fetchLoadingCount }}</span>
+            </div>
+            <div class="output" v-if="fetchLog">{{ fetchLog }}</div>
+          </div>
+          <doc-table title="全局配置" :columns="cols.cfg4" :rows="docs['createfetch'].config"></doc-table>
+          <doc-table title="实例方法" :columns="cols.method4" :rows="docs['createfetch'].methods"></doc-table>
+        </section>
+
+        <!-- ===== createRouter ===== -->
+        <section id="createrouter" class="section">
+          <h2 class="section-title">createRouter Hash 路由</h2>
+          <p class="section-desc">{{ docs['createrouter'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['createrouter'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <lvc-button class="outline" @click="routerPush('home')">push('home')</lvc-button>
+              <lvc-button class="outline" @click="routerPush('settings')">push('settings')</lvc-button>
+              <span class="demo-value">当前 hash: {{ currentHash }}</span>
+            </div>
+          </div>
+          <doc-table title="配置" :columns="cols.cfg3" :rows="docs['createrouter'].config"></doc-table>
+          <doc-table title="router 方法" :columns="cols.method3" :rows="docs['createrouter'].methods"></doc-table>
+        </section>
+
+        <!-- ===== SocketClient ===== -->
+        <section id="socketclient" class="section">
+          <h2 class="section-title">SocketClient WebSocket 客户端</h2>
+          <p class="section-desc">{{ docs['socketclient'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['socketclient'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">连接测试</div>
+            <div class="demo-row">
+              <input v-model="wsUrl" placeholder="ws://..."
+                     style="flex:1;background:#07111e;border:1px solid #1e4469;color:#fff;padding:6px 10px;border-radius:4px;outline:none;font-size:13px;" />
+              <lvc-button type="primary" @click="wsConnect">连接</lvc-button>
+              <lvc-button type="danger" @click="wsClose" :disabled="!wsConnected">断开</lvc-button>
+            </div>
+            <div class="demo-row">
+              <span class="demo-value">状态: {{ wsConnected ? '已连接' : '未连接' }}</span>
+            </div>
+            <div class="output" v-if="wsLog">{{ wsLog }}</div>
+          </div>
+          <doc-table title="配置" :columns="cols.cfg4" :rows="docs['socketclient'].config"></doc-table>
+          <doc-table title="实例方法" :columns="cols.method3" :rows="docs['socketclient'].methods"></doc-table>
+        </section>
+
+        <!-- ===== CanvasTopologyUtils ===== -->
+        <section id="canvastopologyutils" class="section">
+          <h2 class="section-title">CanvasTopologyUtils Canvas 拓扑工具</h2>
+          <p class="section-desc">{{ docs['canvastopologyutils'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['canvastopologyutils'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-card-title">拓扑图绘制</div>
+            <div style="position:relative;width:100%;height:280px;background:#07111e;border:1px solid #1e4469;border-radius:4px;">
+              <canvas id="topoCanvas" ref="topoCanvas" style="width:100%;height:100%;"></canvas>
+            </div>
+            <div class="demo-row" style="margin-top:12px;">
+              <lvc-button type="primary" @click="drawTopo">绘制拓扑</lvc-button>
+              <lvc-button class="outline" @click="toggleTopoAnim">{{ topoAnim ? '停止动画' : '启动流光' }}</lvc-button>
+            </div>
+          </div>
+          <doc-table title="构造函数参数" :columns="cols.param3" :rows="docs['canvastopologyutils'].ctor"></doc-table>
+          <doc-table title="实例方法" :columns="cols.method3" :rows="docs['canvastopologyutils'].methods"></doc-table>
+        </section>
+
+        <!-- ===== px2EchartsUrils ===== -->
+        <section id="px2echartsurils" class="section">
+          <h2 class="section-title">px2EchartsUrils ECharts 像素适配</h2>
+          <p class="section-desc">{{ docs['px2echartsurils'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['px2echartsurils'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-label">设计稿值:</span>
+              <input v-model.number="pxInput" type="number" style="width:80px;background:#07111e;border:1px solid #1e4469;color:#fff;padding:6px 10px;border-radius:4px;outline:none;" />
+              <span class="demo-label">px</span>
+              <span class="demo-value">→ 适配后: {{ pxResult }} px</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-label">屏幕尺寸:</span>
+              <span class="demo-value">{{ winW }} × {{ winH }}</span>
+            </div>
+          </div>
+          <doc-table title="API 参数" :columns="cols.param3" :rows="docs['px2echartsurils'].api"></doc-table>
+        </section>
+
+        <!-- ===== LvcLoading ===== -->
+        <section id="lvcloading" class="section">
+          <h2 class="section-title">LvcLoading 全局 Loading</h2>
+          <p class="section-desc">{{ docs['lvcloading'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvcloading'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <lvc-button type="primary" @click="showLoading">显示 Loading</lvc-button>
+              <lvc-button type="primary" @click="showLoadingText">带文本 Loading</lvc-button>
+              <lvc-button class="outline" @click="closeLoading">关闭</lvc-button>
+            </div>
+          </div>
+          <doc-table title="实例方法" :columns="cols.method3" :rows="docs['lvcloading'].methods"></doc-table>
+        </section>
+
+        <!-- ===== LvcMessage ===== -->
+        <section id="lvcmessage" class="section">
+          <h2 class="section-title">LvcMessage 全局消息提示</h2>
+          <p class="section-desc">{{ docs['lvcmessage'].desc }}</p>
+          <code-block v-for="(ex, i) in docs['lvcmessage'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
+          <div class="demo-card">
+            <div class="demo-row">
+              <lvc-button type="primary" @click="msgSuccess">成功</lvc-button>
+              <lvc-button type="warning" @click="msgWarning">警告</lvc-button>
+              <lvc-button type="info" @click="msgInfo">信息</lvc-button>
+              <lvc-button type="danger" @click="msgError">错误</lvc-button>
+            </div>
+          </div>
+          <doc-table title="options" :columns="cols.cfg4" :rows="docs['lvcmessage'].options"></doc-table>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ===== 代码块组件（带复制按钮） =====
+    Vue.component('code-block', {
+      props: {
+        code: { type: String, required: true },
+        lang: { type: String, default: '' },
+        title: { type: String, default: '' }
+      },
+      data() { return { copied: false, timer: null }; },
+      computed: {
+        displayCode() { return this.code.replace(/^\n+/, '').replace(/\s+$/, ''); }
+      },
+      methods: {
+        copyCode() {
+          const text = this.displayCode;
+          const done = () => {
+            this.copied = true;
+            if (this.timer) clearTimeout(this.timer);
+            this.timer = setTimeout(() => { this.copied = false; }, 2000);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(() => this.fallback(text, done));
+          } else {
+            this.fallback(text, done);
+          }
+        },
+        fallback(text, done) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      },
+      template: `
+        <div class="code-wrap">
+          <div class="code-head">
+            <span class="code-lang" v-if="lang">{{ lang }}</span>
+            <span class="code-title" v-if="title">{{ title }}</span>
+            <button class="copy-btn" :class="{ copied }" @click="copyCode">{{ copied ? '已复制' : '复制' }}</button>
+          </div>
+          <pre class="code-pre"><code>{{ displayCode }}</code></pre>
+        </div>
+      `
+    });
+
+    // ===== 文档表格组件 =====
+    Vue.component('doc-table', {
+      props: {
+        title: String,
+        rows: { type: Array, default: () => [] },
+        columns: { type: Array, required: true }
+      },
+      template: `
+        <div class="doc-table-wrap" v-if="rows && rows.length">
+          <div class="block-title">{{ title }}</div>
+          <table class="doc-table">
+            <thead>
+              <tr><th v-for="(c,i) in columns" :key="i">{{ c.label }}</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(r,ri) in rows" :key="ri">
+                <td v-for="(c,ci) in columns" :key="ci" :class="c.cls">{{ r[c.key] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `
+    });
+
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          sidebarOpen: false,
+          active: 'intro',
+          components: [
+            { id: 'lvc-button', name: 'Button 按钮' },
+            { id: 'lvc-switch', name: 'Switch 开关' },
+            { id: 'lvc-odometer', name: 'Odometer 数字滚动' },
+            { id: 'lvc-load-more', name: 'LoadMore 滚动加载' },
+            { id: 'lvc-select', name: 'Select 下拉选择' },
+            { id: 'lvc-table', name: 'Table 表格' },
+            { id: 'lvc-date-picker', name: 'DatePicker 日期选择器' },
+            { id: 'lvc-time-picker', name: 'TimePicker 时间选择器' },
+            { id: 'lvc-year-picker', name: 'YearPicker 年份选择器' },
+            { id: 'lvc-month-picker', name: 'MonthPicker 月份选择器' },
+            { id: 'lvc-tree', name: 'Tree 树形控件' },
+            { id: 'lvc-dialog', name: 'Dialog 对话框' },
+          ],
+          tools: [
+            { id: 'bus', name: 'Bus 通讯总线' },
+            { id: 'createfetch', name: 'createFetch HTTP' },
+            { id: 'createrouter', name: 'createRouter 路由' },
+            { id: 'socketclient', name: 'SocketClient WS' },
+            { id: 'canvastopologyutils', name: 'CanvasTopology' },
+            { id: 'px2echartsurils', name: 'px2Echarts 像素适配' },
+            { id: 'lvcloading', name: 'LvcLoading' },
+            { id: 'lvcmessage', name: 'LvcMessage' },
+          ],
+          // 安装 / 快速开始 代码
+          installCode: 'npm install lvc-ui',
+          qsES: `import Vue from 'vue';
+import LvcUI from 'lvc-ui';
+
+Vue.use(LvcUI);`,
+          qsCJS: `const Vue = require('vue');
+const LvcUI = require('lvc-ui');
+
+Vue.use(LvcUI);`,
+          qsScript: `<!-- 必须先引入 Vue -->
+<script src="https://unpkg.com/vue@2.7.16/dist/vue.js"><\/script>
+<!-- 引入 LvcUI（压缩版） -->
+<script src="https://unpkg.com/lvc-ui/dist/lvc-ui.min.js"><\/script>
+<!-- window.Vue 存在时会自动注册所有组件，window.LvcUI 可用 -->`,
+          qsUsage: `<template>
+  <lvc-button type="primary" @click="onClick">点击</lvc-button>
+  <lvc-select v-model="val" :options="opts" />
+</template>`,
+          // 表格列定义
+          cols: {
+            props: [
+              { key: 'name', label: '参数', cls: 'c-name' },
+              { key: 'desc', label: '说明', cls: 'c-desc' },
+              { key: 'type', label: '类型', cls: 'c-type' },
+              { key: 'default', label: '默认值', cls: 'c-default' }
+            ],
+            events: [
+              { key: 'name', label: '事件名称', cls: 'c-name' },
+              { key: 'desc', label: '说明', cls: 'c-desc' },
+              { key: 'params', label: '回调参数', cls: 'c-type' }
+            ],
+            slots: [
+              { key: 'name', label: 'name', cls: 'c-name' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            cfg3: [
+              { key: 'name', label: '字段', cls: 'c-name' },
+              { key: 'type', label: '类型', cls: 'c-type' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            cfg4: [
+              { key: 'name', label: '字段', cls: 'c-name' },
+              { key: 'type', label: '类型', cls: 'c-type' },
+              { key: 'default', label: '默认值', cls: 'c-default' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            method4: [
+              { key: 'name', label: '方法名', cls: 'c-name' },
+              { key: 'params', label: '参数', cls: 'c-type' },
+              { key: 'ret', label: '返回值', cls: 'c-default' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            method3: [
+              { key: 'name', label: '方法名', cls: 'c-name' },
+              { key: 'params', label: '参数', cls: 'c-type' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            param3: [
+              { key: 'name', label: '参数', cls: 'c-name' },
+              { key: 'type', label: '类型', cls: 'c-type' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            tableCols: [
+              { key: 'field', label: '字段', cls: 'c-name' },
+              { key: 'type', label: '类型', cls: 'c-type' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ],
+            scopedSlots: [
+              { key: 'name', label: '插槽名', cls: 'c-name' },
+              { key: 'scope', label: '作用域', cls: 'c-type' },
+              { key: 'desc', label: '用途', cls: 'c-desc' }
+            ],
+            typeValues: [
+              { key: 'name', label: 'type', cls: 'c-name' },
+              { key: 'desc', label: '说明', cls: 'c-desc' }
+            ]
+          },
+          // ===== 文档数据 =====
+          docs: {
+            'lvc-button': {
+              desc: '基础按钮，支持多种类型、朴素/圆角/圆形、加载状态、禁用、图标。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-button type="primary">主要按钮</lvc-button>
+<lvc-button type="success" plain>朴素成功</lvc-button>
+<lvc-button type="danger" round>圆角危险</lvc-button>
+<lvc-button type="primary" loading>加载中</lvc-button>
+<lvc-button type="info" disabled>禁用</lvc-button>
+<lvc-button type="primary" icon="lvc-icon-edit">编辑</lvc-button>`
+              }],
+              props: [
+                { name: 'type', desc: '类型：primary / success / warning / danger / info / default', type: 'String', default: '"default"' },
+                { name: 'plain', desc: '朴素按钮（透明背景）', type: 'Boolean', default: 'false' },
+                { name: 'round', desc: '圆角按钮', type: 'Boolean', default: 'false' },
+                { name: 'circle', desc: '圆形按钮', type: 'Boolean', default: 'false' },
+                { name: 'disabled', desc: '禁用', type: 'Boolean', default: 'false' },
+                { name: 'loading', desc: '加载中（显示旋转图标，禁用点击）', type: 'Boolean', default: 'false' },
+                { name: 'icon', desc: '图标类名', type: 'String', default: '""' }
+              ],
+              events: [
+                { name: 'click', desc: '点击时触发（disabled/loading 时不触发）', params: 'event: Event' }
+              ],
+              slots: [
+                { name: 'default', desc: '按钮文本' }
+              ]
+            },
+            'lvc-switch': {
+              desc: '开关选择器，支持自定义颜色、尺寸、禁用。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-switch v-model="isOpen" />
+
+<lvc-switch
+  v-model="enabled"
+  :active-color="'#00e5ff'"
+  :inactive-color="'#333'"
+  :width="40"
+  :height="22"
+/>
+
+<lvc-switch v-model="locked" disabled />`
+              }],
+              props: [
+                { name: 'value', desc: '状态（v-model）', type: 'Boolean', default: 'false' },
+                { name: 'disabled', desc: '禁用', type: 'Boolean', default: 'false' },
+                { name: 'width', desc: '宽度（px）', type: 'Number', default: '34' },
+                { name: 'height', desc: '高度（px）', type: 'Number', default: '18' },
+                { name: 'activeColor', desc: '激活背景色', type: 'String', default: '"#42A3D6"' },
+                { name: 'inactiveColor', desc: '未激活背景色', type: 'String', default: '"#395E7C"' },
+                { name: 'dotColor', desc: '圆点颜色', type: 'String', default: '"#ffffff"' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步', params: 'value: Boolean' },
+                { name: 'change', desc: '状态变化', params: 'value: Boolean' }
+              ]
+            },
+            'lvc-odometer': {
+              desc: '数字滚动动画组件，依赖外部 Odometer 库。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<!-- 需先引入 odometer 库（dist 目录已提供） -->
+<link rel="stylesheet" href="./dist/odometer-theme-minimal.css" />
+<script src="./dist/odometer.min.js"><\/script>
+
+<lvc-odometer :value="count" :duration="1500" unit="kWh" unit-position="right" />
+
+<lvc-odometer :value="price">
+  <template #unit-left><span style="color:#ffd700">$</span></template>
+</lvc-odometer>`
+              }],
+              props: [
+                { name: 'value', desc: '当前数值（变化时触发滚动动画）', type: 'Number', default: '0' },
+                { name: 'duration', desc: '动画时长（ms）', type: 'Number', default: '1000' },
+                { name: 'maxAnimations', desc: '最大动画次数', type: 'Number', default: 'Infinity' },
+                { name: 'unit', desc: '单位文本', type: 'String', default: '""' },
+                { name: 'unitSize', desc: '单位字号', type: 'String', default: '"inherit"' },
+                { name: 'unitPosition', desc: '单位位置：left / right', type: 'String', default: '"right"' }
+              ],
+              events: [],
+              slots: [
+                { name: 'unit-left', desc: '左侧单位（覆盖 prop）' },
+                { name: 'unit-right', desc: '右侧单位（覆盖 prop）' }
+              ]
+            },
+            'lvc-load-more': {
+              desc: '基于 IntersectionObserver 的触底加载组件。',
+              examples: [
+                {
+                  lang: 'html', title: '模板用法',
+                  code: `<div class="list-container" style="height:400px;overflow-y:auto;">
+  <div v-for="item in list" :key="item.id">{{ item.name }}</div>
+  <lvc-load-more
+    :loading="loading"
+    :finished="finished"
+    container=".list-container"
+    @load="loadMore"
+  />
+</div>`
+                },
+                {
+                  lang: 'js', title: '逻辑',
+                  code: `export default {
+  data() {
+    return { list: [], loading: false, finished: false, page: 1 };
+  },
+  methods: {
+    async loadMore() {
+      this.loading = true;
+      const data = await fetch(\`/api/list?page=\${this.page++}\`).then(r => r.json());
+      this.list.push(...data);
+      this.loading = false;
+      if (data.length < 10) this.finished = true;
+    }
+  }
+};`
+                }
+              ],
+              props: [
+                { name: 'loading', desc: '是否正在加载', type: 'Boolean', default: 'false' },
+                { name: 'finished', desc: '是否已加载完毕', type: 'Boolean', default: 'false' },
+                { name: 'distance', desc: '触发距离（rootMargin 底部）', type: 'String', default: '"0px"' },
+                { name: 'container', desc: '滚动容器选择器（空=视口）', type: 'String', default: '""' },
+                { name: 'loadingText', desc: '加载中文本', type: 'String', default: '"正在加载更多..."' },
+                { name: 'finishedText', desc: '完成文本', type: 'String', default: '"没有更多数据了"' }
+              ],
+              events: [
+                { name: 'load', desc: '触底且非 loading/finished 时触发', params: '无' }
+              ]
+            },
+            'lvc-select': {
+              desc: '下拉选择器，支持清除、禁用项、iframe 跨窗口点击关闭。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-select v-model="selected" :options="opts" placeholder="请选择" clearable />
+
+<script>
+export default {
+  data() {
+    return {
+      selected: '',
+      opts: [
+        { label: '选项一', value: '1' },
+        { label: '选项二', value: '2' },
+        { label: '禁用项', value: '3', disabled: true }
+      ]
+    };
+  }
+};
+<\/script>`
+              }],
+              props: [
+                { name: 'value', desc: '当前值（v-model）', type: 'String | Number', default: '""' },
+                { name: 'options', desc: '选项数组 { label, value, disabled? }', type: 'Array', default: '[]' },
+                { name: 'placeholder', desc: '占位文本', type: 'String', default: '"请选择"' },
+                { name: 'clearable', desc: '可清除', type: 'Boolean', default: 'true' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步（清除时为 ""）', params: 'option: Object | ""' },
+                { name: 'change', desc: '值变化', params: 'option: Object | ""' },
+                { name: 'clear', desc: '清除时触发', params: '无' }
+              ]
+            },
+            'lvc-table': {
+              desc: '数据表格，支持斑马纹、选择列、列排序、自定义单元格（作用域插槽）。',
+              examples: [
+                {
+                  lang: 'html', title: '基础用法',
+                  code: `<lvc-table
+  :data="tableData"
+  :columns="columns"
+  selection
+  @selection-change="onSel"
+  @sort-change="onSort"
+>
+  <template #status="{ row }">
+    <span :style="{ color: row.status === '在线' ? '#0f0' : '#f00' }">{{ row.status }}</span>
+  </template>
+</lvc-table>`
+                },
+                {
+                  lang: 'js', title: '逻辑',
+                  code: `export default {
+  data() {
+    return {
+      tableData: [
+        { id: 1, name: '设备A', status: '在线' },
+        { id: 2, name: '设备B', status: '离线' }
+      ],
+      columns: [
+        { label: 'ID', prop: 'id', sortable: true, width: '80' },
+        { label: '名称', prop: 'name' },
+        { label: '状态', prop: 'status', align: 'center' }
+      ]
+    };
+  },
+  methods: {
+    onSel(rows) { console.log('选中:', rows); },
+    onSort({ prop, order }) { console.log('排序:', prop, order); }
+  }
+};`
+                }
+              ],
+              props: [
+                { name: 'data', desc: '行数据', type: 'Array', default: '[]' },
+                { name: 'columns', desc: '列配置', type: 'Array', default: '[]' },
+                { name: 'stripe', desc: '斑马纹', type: 'Boolean', default: 'true' },
+                { name: 'selection', desc: '显示选择列', type: 'Boolean', default: 'false' }
+              ],
+              columnsCfg: [
+                { field: 'label', type: 'String', desc: '列标题' },
+                { field: 'prop', type: 'String', desc: '数据字段名' },
+                { field: 'width', type: 'String | Number', desc: '列宽' },
+                { field: 'align', type: 'String', desc: '对齐：left / center / right' },
+                { field: 'sortable', type: 'Boolean', desc: '可排序' }
+              ],
+              events: [
+                { name: 'selection-change', desc: '选择变化', params: 'rows: Array' },
+                { name: 'sort-change', desc: '排序变化（order: asc/desc/""）', params: '{ prop, order }' }
+              ],
+              scopedSlots: [
+                { name: 'header-{prop}', scope: '{ column }', desc: '自定义表头' },
+                { name: '{prop}', scope: '{ row, index }', desc: '自定义单元格' }
+              ]
+            },
+            'lvc-date-picker': {
+              desc: '日期/日期时间/范围选择器，支持单面板/双面板、时间选择、范围 hover 预览。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<!-- 单日期 -->
+<lvc-date-picker v-model="date" type="date" />
+
+<!-- 日期时间 -->
+<lvc-date-picker v-model="datetime" type="datetime" />
+
+<!-- 日期时间范围（双面板） -->
+<lvc-date-picker v-model="range" type="datetimerange" />
+
+<!-- 日期范围（单面板） -->
+<lvc-date-picker v-model="range" type="daterange" :single-panel="true" />`
+              }],
+              props: [
+                { name: 'value', desc: '当前值（范围模式为数组）', type: 'String | Array', default: '""' },
+                { name: 'type', desc: '类型，见下表', type: 'String', default: '"date"' },
+                { name: 'rangeSeparator', desc: '范围分隔符', type: 'String', default: '"至"' },
+                { name: 'singlePanel', desc: '范围模式单面板', type: 'Boolean', default: 'false' }
+              ],
+              typeValues: [
+                { name: 'date', desc: '单日期' },
+                { name: 'datetime', desc: '单日期+时间' },
+                { name: 'daterange', desc: '日期范围' },
+                { name: 'datetimerange', desc: '日期时间范围' },
+                { name: 'datetimestartorend', desc: '同一天起止时间' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步', params: 'value' },
+                { name: 'confirm', desc: '点「确定」时触发', params: 'value' }
+              ]
+            },
+            'lvc-time-picker': {
+              desc: '时间选择器（时:分），支持 24:00 特殊值。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-time-picker v-model="time" />
+
+<lvc-time-picker v-model="endTime" disabled />`
+              }],
+              props: [
+                { name: 'value', desc: '时间 HH:mm（v-model）', type: 'String', default: '"00:00"' },
+                { name: 'disabled', desc: '禁用', type: 'Boolean', default: 'false' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步', params: 'time: String' },
+                { name: 'change', desc: '确认选择时触发', params: 'time: String' }
+              ]
+            },
+            'lvc-year-picker': {
+              desc: '年份/年份范围选择器。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-year-picker v-model="year" type="year" />
+
+<lvc-year-picker v-model="yearRange" type="yearrange" :year-range="5" />`
+              }],
+              props: [
+                { name: 'value', desc: '当前值（范围模式为数组）', type: 'String | Array', default: '""' },
+                { name: 'yearRange', desc: '面板前后年份范围（共 yearRange*2+1 个）', type: 'Number', default: '5' },
+                { name: 'type', desc: 'year / yearrange', type: 'String', default: '"year"' },
+                { name: 'rangeSeparator', desc: '范围分隔符', type: 'String', default: '"至"' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步', params: 'value' },
+                { name: 'confirm', desc: '点「确定」时触发', params: 'value' },
+                { name: 'change', desc: '点「确定」时触发', params: 'value' }
+              ]
+            },
+            'lvc-month-picker': {
+              desc: '月份/月份范围选择器。',
+              examples: [{
+                lang: 'html', title: '基础用法',
+                code: `<lvc-month-picker v-model="month" type="month" />
+
+<lvc-month-picker v-model="monthRange" type="monthrange" />`
+              }],
+              props: [
+                { name: 'value', desc: '格式 YYYY-MM（范围模式为数组）', type: 'String | Array', default: '""' },
+                { name: 'type', desc: 'month / monthrange', type: 'String', default: '"month"' },
+                { name: 'rangeSeparator', desc: '范围分隔符', type: 'String', default: '"至"' },
+                { name: 'singlePlaceholder', desc: '单选占位符', type: 'String', default: '"请选择月份"' },
+                { name: 'startPlaceholder', desc: '范围起始占位符', type: 'String', default: '"开始月份"' },
+                { name: 'endPlaceholder', desc: '范围结束占位符', type: 'String', default: '"结束月份"' }
+              ],
+              events: [
+                { name: 'input', desc: 'v-model 同步', params: 'value' },
+                { name: 'confirm', desc: '点「确定」时触发', params: 'value' }
+              ]
+            },
+            'lvc-tree': {
+              desc: '递归树，支持节点选择、展开/折叠、三态复选框、过滤、勾选数量限制。',
+              examples: [
+                {
+                  lang: 'html', title: '基础用法',
+                  code: `<lvc-tree
+  ref="tree"
+  :data="treeData"
+  :selected-id="selectedId"
+  show-checkbox
+  :max-check="20"
+  :filter-node-method="filterFn"
+  @select="onSelect"
+  @check-change="onCheck"
+/>
+
+<script>
+export default {
+  data() {
+    return {
+      treeData: [
+        {
+          id: 1, label: '根节点', icon: 'folder', children: [
+            { id: 2, label: '子节点1', icon: 'meter' },
+            { id: 3, label: '子节点2', icon: 'data' }
+          ]
+        }
+      ],
+      selectedId: null
+    };
+  },
+  methods: {
+    filterFn(text, node) {
+      return node.label.includes(text);
+    },
+    onSelect(node) { console.log('选中:', node); },
+    onCheck({ checkedKeys }) { console.log('勾选:', checkedKeys); },
+    getChecked() {
+      return this.$refs.tree.getCheckedKeys();
+    }
+  }
+};
+<\/script>`
+                },
+                {
+                  lang: 'js', title: '节点数据结构',
+                  code: `{
+  id: String|Number,      // 必填
+  label: String,          // 必填
+  icon: String,           // 可选: 'folder'|'meter'|'data'|'device'|'default'
+  expanded: Boolean,      // 可选: 初始展开
+  children: Array         // 可选: 子节点
+}`
+                }
+              ],
+              props: [
+                { name: 'data', desc: '树形数据', type: 'Array', default: '[]' },
+                { name: 'selectedId', desc: '当前选中节点 ID', type: 'String | Number', default: 'null' },
+                { name: 'defaultExpandAll', desc: '默认展开所有节点', type: 'Boolean', default: 'false' },
+                { name: 'showCheckbox', desc: '显示复选框', type: 'Boolean', default: 'false' },
+                { name: 'defaultCheckedKeys', desc: '默认勾选的 key', type: 'Array', default: '[]' },
+                { name: 'maxCheck', desc: '最多勾选叶子数（0=不限）', type: 'Number', default: '0' },
+                { name: 'filterNodeMethod', desc: '过滤方法 (text, node) => Boolean', type: 'Function', default: 'null' },
+                { name: 'autoExpandOnFilter', desc: '过滤时自动展开匹配节点', type: 'Boolean', default: 'true' }
+              ],
+              events: [
+                { name: 'select', desc: '节点选中（showCheckbox 模式下不触发）', params: 'node: Object' },
+                { name: 'toggle', desc: '展开/折叠', params: '{ node, expanded }' },
+                { name: 'check-change', desc: '复选框变化', params: '{ node, checked, indeterminate, checkedKeys, checkedNodes }' },
+                { name: 'max-check-exceeded', desc: '超过 maxCheck 限制', params: '{ max, actual }' },
+                { name: 'filter-change', desc: '过滤文本变化', params: 'text: String' }
+              ],
+              methods: [
+                { name: 'filter', params: 'text: String', ret: '-', desc: '过滤（会清空勾选）' },
+                { name: 'getCheckedKeys', params: '-', ret: 'Array', desc: '获取勾选的 key' },
+                { name: 'setCheckedKeys', params: 'keys: Array', ret: '-', desc: '设置勾选' },
+                { name: 'getHalfCheckedKeys', params: '-', ret: 'Array', desc: '获取半选 key' }
+              ]
+            },
+            'lvc-dialog': {
+              desc: '模态对话框，支持模板用法和命令式 API。',
+              examples: [{
+                lang: 'html', title: '模板用法',
+                code: `<lvc-dialog :visible.sync="visible" title="编辑" @confirm="onConfirm">
+  <p>自定义内容</p>
+</lvc-dialog>
+
+<script>
+export default {
+  data() { return { visible: false }; },
+  methods: {
+    onConfirm() {
+      // 处理确认逻辑
+      this.visible = false;
+    }
+  }
+};
+<\/script>`
+              }],
+              cmdExamples: [{
+                lang: 'js', title: '命令式用法 lvcDialog.show()',
+                code: `import { lvcDialog } from 'lvc-ui';
+
+// 简单提示
+lvcDialog.show({
+  title: '提示',
+  content: '操作成功'
+});
+
+// 确认删除
+lvcDialog.show({
+  title: '确认删除',
+  content: '确定要删除这条记录吗？',
+  confirmText: '删除',
+  cancelText: '取消',
+  onConfirm: async () => {
+    await deleteRecord();
+    // 返回 false 可阻止关闭
+  },
+  onCancel: () => console.log('cancelled')
+});`
+              }],
+              props: [
+                { name: 'visible', desc: '是否显示（.sync）', type: 'Boolean', default: 'false' },
+                { name: 'title', desc: '标题', type: 'String', default: '"提示"' },
+                { name: 'content', desc: '内容文本（被默认插槽覆盖时无效）', type: 'String', default: '""' },
+                { name: 'width', desc: '宽度', type: 'String', default: '"44.32vmin"' },
+                { name: 'confirmText', desc: '确认按钮文本', type: 'String', default: '"确定"' },
+                { name: 'cancelText', desc: '取消按钮文本', type: 'String', default: '"取消"' },
+                { name: 'showCancel', desc: '显示取消按钮', type: 'Boolean', default: 'true' },
+                { name: 'showClose', desc: '显示关闭按钮', type: 'Boolean', default: 'true' },
+                { name: 'showFooter', desc: '显示底部按钮区', type: 'Boolean', default: 'true' },
+                { name: 'closeOnClickModal', desc: '点击遮罩关闭', type: 'Boolean', default: 'true' }
+              ],
+              events: [
+                { name: 'update:visible', desc: '.sync 同步', params: 'false' },
+                { name: 'close', desc: '关闭', params: '-' },
+                { name: 'cancel', desc: '取消', params: '-' },
+                { name: 'confirm', desc: '确认（不自动关闭，由父级控制）', params: '-' }
+              ],
+              slots: [
+                { name: 'default', desc: '自定义主体内容' }
+              ],
+              cmdOptions: [
+                { name: 'title', type: 'String', desc: '标题' },
+                { name: 'content', type: 'String', desc: '内容文本' },
+                { name: 'width', type: 'String', desc: '宽度' },
+                { name: 'confirmText', type: 'String', desc: '确认按钮文本' },
+                { name: 'cancelText', type: 'String', desc: '取消按钮文本' },
+                { name: 'showCancel', type: 'Boolean', desc: '显示取消按钮' },
+                { name: 'showFooter', type: 'Boolean', desc: '显示底部按钮区' },
+                { name: 'closeOnClickModal', type: 'Boolean', desc: '点击遮罩关闭' },
+                { name: 'onConfirm', type: '() => Promise<Boolean|undefined>', desc: '确认回调（返回 false 阻止关闭）' },
+                { name: 'onCancel', type: 'Function', desc: '取消回调' }
+              ]
+            },
+            'bus': {
+              desc: '跨 iframe / 跨标签页的事件总线，支持 request-response 模式。',
+              examples: [{
+                lang: 'js', title: '基础用法',
+                code: `import { Bus } from 'lvc-ui';
+
+// 监听
+Bus.on('refresh', () => loadData());
+
+// 监听并返回数据（供 request 调用）
+Bus.on('getUser', () => ({ name: 'admin', role: 'root' }));
+
+// 触发
+Bus.emit('refresh', { id: 1 });
+
+// 请求-响应
+const user = await Bus.request('getUser');
+console.log(user); // { name: 'admin', role: 'root' }`
+              }],
+              api: [
+                { name: 'on', params: 'event, fn', ret: '-', desc: '监听事件' },
+                { name: 'off', params: 'event, fn?', ret: '-', desc: '移除监听（不传 fn 清空该事件全部）' },
+                { name: 'once', params: 'event, fn', ret: '-', desc: '监听一次' },
+                { name: 'emit', params: 'event, data', ret: '-', desc: '触发事件' },
+                { name: 'request', params: 'event, data, timeout=5000', ret: 'Promise', desc: '请求-响应（超时 reject "timeout"）' }
+              ]
+            },
+            'createfetch': {
+              desc: '基于 fetch 的 HTTP 客户端工厂，支持拦截器、重试、缓存、去重、轮询、loading 监听。',
+              examples: [
+                {
+                  lang: 'js', title: '工厂函数',
+                  code: `import { createFetch } from 'lvc-ui';
+
+const http = createFetch({
+  baseURL: '/api',
+  timeout: 10000,
+  retries: 1,
+  getToken: () => localStorage.getItem('myToken')
+});`
+                },
+                {
+                  lang: 'js', title: '轮询示例',
+                  code: `const poller = http.poll('/metrics', {}, {
+  interval: 3000,
+  callback: (data) => console.log('metrics:', data)
+});
+
+poller.on('error', err => console.error(err));
+
+// 停止
+poller.stop();`
+                },
+                {
+                  lang: 'js', title: '拦截器示例',
+                  code: `http.interceptors.request.handlers.push({
+  fulfilled: (config) => {
+    config.headers['X-Custom'] = 'value';
+    return config;
+  },
+  rejected: (err) => {}
+});`
+                }
+              ],
+              config: [
+                { name: 'baseURL', type: 'String', default: '""', desc: '基础 URL' },
+                { name: 'headers', type: 'Object', default: '{ "Content-Type": "application/json" }', desc: '默认请求头' },
+                { name: 'timeout', type: 'Number', default: '10000', desc: '超时（ms）' },
+                { name: 'retries', type: 'Number', default: '1', desc: '重试次数' },
+                { name: 'retryDelay', type: 'Number', default: '500', desc: '重试延迟' },
+                { name: 'cache', type: 'Number', default: '0', desc: 'GET 缓存时间（ms），0=不缓存' },
+                { name: 'credentials', type: 'String', default: '"same-origin"', desc: 'fetch credentials' },
+                { name: 'responseType', type: 'String', default: '"json"', desc: 'json/text/blob' },
+                { name: 'concurrency', type: 'Number', default: 'Infinity', desc: '最大并发' },
+                { name: 'dedupe', type: 'Boolean', default: 'true', desc: '相同请求去重' },
+                { name: 'debounce', type: 'Number', default: '200', desc: '去抖（ms），0=不去抖' },
+                { name: 'getToken', type: 'Function', default: '() => localStorage.getItem("emstoken")', desc: '取 token' },
+                { name: 'refreshToken', type: 'AsyncFunction', default: '-', desc: '刷新 token' },
+                { name: 'onRefreshFail', type: 'Function', default: '-', desc: '刷新失败回调' },
+                { name: 'onError', type: 'Function', default: '-', desc: '错误回调' },
+                { name: 'showLog', type: 'Boolean', default: 'false', desc: '打印日志' }
+              ],
+              methods: [
+                { name: 'get', params: 'url, opts={}', ret: 'Promise', desc: 'GET' },
+                { name: 'post', params: 'url, body, opts={}', ret: 'Promise', desc: 'POST' },
+                { name: 'put', params: 'url, body, opts={}', ret: 'Promise', desc: 'PUT' },
+                { name: 'delete', params: 'url, opts={}', ret: 'Promise', desc: 'DELETE' },
+                { name: 'request', params: 'options', ret: 'Promise', desc: '通用请求' },
+                { name: 'poll', params: 'url, payload={}, options={}', ret: 'poller', desc: '启动轮询' },
+                { name: 'stopAllPoll', params: '-', ret: '-', desc: '停止所有轮询' },
+                { name: 'createCancelToken', params: '-', ret: '{ signal, cancel }', desc: '创建可取消 token' },
+                { name: 'onLoading', params: 'cb', ret: 'unsubscribe', desc: '监听 loading 计数' },
+                { name: 'setToken', params: 'token | null', ret: '-', desc: '设置/清除 token' },
+                { name: 'interceptors', params: '-', ret: '-', desc: '拦截器 { request, response }' }
+              ]
+            },
+            'createrouter': {
+              desc: '轻量级 Hash 路由，支持前置守卫、嵌套层级、登录鉴权。',
+              examples: [
+                {
+                  lang: 'js', title: '工厂函数',
+                  code: `import { createRouter } from 'lvc-ui';
+
+const router = createRouter({
+  routes: {
+    home: { path: '#/home', meta: { requiresAuth: true } },
+    settings: '#/settings',
+    about: { path: '#/about' }
+  },
+  default: 'home',
+  level: 1
+});`
+                },
+                {
+                  lang: 'js', title: '使用示例',
+                  code: `router.init(this);
+
+router.beforeEach((to, from, next) => {
+  console.log('跳转:', from, '->', to);
+  next();
+});
+
+router.push('settings');`
+                }
+              ],
+              config: [
+                { name: 'routes', type: 'Object', desc: '路由表 { name: "path" | { path, meta } }' },
+                { name: 'default', type: 'String', desc: '默认路由名' },
+                { name: 'level', type: 'Number', desc: '路由层级（hash 第几段）' },
+                { name: 'loginPage', type: 'String', desc: '登录页跳转地址' }
+              ],
+              methods: [
+                { name: 'init', params: 'vm', desc: '初始化（绑定 Vue 实例，监听 hashchange）' },
+                { name: 'push', params: 'name', desc: '跳转' },
+                { name: 'beforeEach', params: 'fn', desc: '注册前置守卫 fn(to, from, next)' },
+                { name: 'resolve', params: '-', desc: '解析当前 hash' }
+              ]
+            },
+            'socketclient': {
+              desc: '带心跳、自动重连、消息分发的 WebSocket 客户端。',
+              examples: [
+                {
+                  lang: 'js', title: '构造函数',
+                  code: `import { SocketClient } from 'lvc-ui';
+
+const ws = new SocketClient('ws://example.com/ws', {
+  heartbeatInterval: 30000,
+  reconnectInterval: 5000,
+  maxReconnectAttempts: 5,
+  pingMessage: 'ping'
+});`
+                },
+                {
+                  lang: 'js', title: '使用示例',
+                  code: `const ws = new SocketClient('ws://localhost:8080');
+
+// 监听业务事件（由后端消息的 topic/type 字段决定）
+ws.on('chat', (data) => {
+  console.log('收到消息:', data);
+});
+
+// 监听原始消息
+ws.on('message', (msg) => {
+  console.log('raw:', msg);
+});
+
+// 发送
+ws.send({ type: 'chat', text: 'hello' });
+
+// 关闭
+ws.close();`
+                }
+              ],
+              config: [
+                { name: 'heartbeatInterval', type: 'Number', default: '30000', desc: '心跳间隔（ms）' },
+                { name: 'reconnectInterval', type: 'Number', default: '5000', desc: '重连基础间隔' },
+                { name: 'maxReconnectAttempts', type: 'Number', default: '5', desc: '最大重连次数（-1=无限）' },
+                { name: 'pingMessage', type: 'String', default: '"ping"', desc: '心跳内容' }
+              ],
+              methods: [
+                { name: 'send', params: 'data: Object|String', desc: '发送消息（未连接时入队列）' },
+                { name: 'on', params: 'eventName, callback', desc: '监听事件' },
+                { name: 'off', params: 'eventName, callback?', desc: '移除监听' },
+                { name: 'close', params: '-', desc: '手动关闭（不再重连）' }
+              ]
+            },
+            'canvastopologyutils': {
+              desc: 'Canvas 拓扑图绘制工具，支持节点、连线、流光动画、图片缓存、DPR 适配。',
+              examples: [{
+                lang: 'js', title: '基础用法',
+                code: `const topo = new CanvasTopologyUtils('topoCanvas', '.topo-container', 1280);
+topo.init();
+
+// 绘制节点
+topo.drawNode(100, 100, 20, '#00e5ff', '节点A');
+topo.drawNode(300, 100, 20, '#ff9800', '节点B');
+
+// 绘制流光连线（requestAnimationFrame 中持续更新 offset）
+function animate() {
+  topo.clear();
+  topo.drawNode(100, 100, 20, '#00e5ff', '节点A');
+  topo.drawNode(300, 100, 20, '#ff9800', '节点B');
+  topo.drawFlowLine([[120, 100], [280, 100]], { offset: Date.now() / 30 });
+  requestAnimationFrame(animate);
+}
+animate();`
+              }],
+              ctor: [
+                { name: 'canvasId', type: 'String', desc: 'Canvas 元素 ID' },
+                { name: 'containerSelector', type: 'String', desc: '父容器选择器（用于尺寸适配）' },
+                { name: 'baseWidth', type: 'Number', desc: '设计稿基准宽度，默认 1280' }
+              ],
+              methods: [
+                { name: 'init', params: '-', desc: '初始化画布' },
+                { name: 's', params: 'val: Number', desc: '缩放转换（设计稿 px → 实际 px）' },
+                { name: 'clear', params: '-', desc: '清空画布' },
+                { name: 'drawNode', params: 'x, y, r, color, label, isSub=false, labelY=15, fontS=12', desc: '绘制拓扑节点' },
+                { name: 'drawNodeImgText', params: '{ url, x, y, w, h, text, ... }', desc: '绘制图片+文字节点' },
+                { name: 'drawFlowLine', params: 'points, options', desc: '绘制流光动画虚线' },
+                { name: 'drawDashLine', params: 'points, options', desc: '绘制虚线' },
+                { name: 'drawImage', params: 'url, x, y, w, h, isCenter=true', desc: '绘制图片' },
+                { name: 'drawText', params: 'text, x, y, options', desc: '绘制文字' },
+                { name: 'drawCircle', params: 'x, y, r, options', desc: '绘制圆' },
+                { name: 'drawPolygon', params: 'points, options', desc: '绘制多边形' },
+                { name: 'drawFlowCurve', params: 'p1, p2, offset', desc: '绘制流动贝塞尔连线' }
+              ]
+            },
+            'px2echartsurils': {
+              desc: '将设计稿 px 转换为当前屏幕实际 px（模拟 vmin 逻辑，用于 ECharts 字号适配）。',
+              examples: [{
+                lang: 'js', title: '基础用法',
+                code: `const fontSize = px2EchartsUrils.px2Echarts(14); // 在 1920×1080 屏幕上可能返回 16.80
+
+// 在 ECharts 配置中使用
+const option = {
+  xAxis: {
+    axisLabel: { fontSize: px2EchartsUrils.px2Echarts(12) }
+  }
+};`
+              }],
+              api: [
+                { name: 'pxValue', type: 'Number', desc: '设计稿像素值' },
+                { name: 'desWidth', type: 'Number', desc: '设计稿宽度，默认 1280' },
+                { name: 'desHeight', type: 'Number', desc: '设计稿高度，默认 800' },
+                { name: 'keep1px', type: 'Boolean', desc: '是否对 1px 做保护，默认 true' }
+              ]
+            },
+            'lvcloading': {
+              desc: '全局加载遮罩，支持单例、文本更新、过渡动画。',
+              examples: [{
+                lang: 'js', title: '基础用法',
+                code: `// 浏览器全局
+LvcLoading.show('加载中...');
+await fetchData();
+LvcLoading.close();
+
+// Vue 组件内
+this.$lvcLoading.show({ text: '提交中' });
+
+// 更新文本
+const inst = LvcLoading.show('处理中');
+inst.setText('快好了');
+inst.close();`
+              }],
+              methods: [
+                { name: 'show', params: 'options', desc: '显示（字符串简写: show("加载中")）' },
+                { name: 'setText', params: 'text: String', desc: '更新文本' },
+                { name: 'close', params: '-', desc: '关闭' }
+              ]
+            },
+            'lvcmessage': {
+              desc: '全局消息提示，支持 info/success/warning/error 四种类型。',
+              examples: [{
+                lang: 'js', title: '基础用法',
+                code: `LvcMessage.success('保存成功');
+LvcMessage.error({ message: '网络错误', duration: 5000 });
+LvcMessage.warning('请注意');
+LvcMessage.info('提示');
+
+// Vue 组件内
+this.$lvcMessage.error('出错了');`
+              }],
+              options: [
+                { name: 'type', type: 'String', default: '"info"', desc: 'info/success/warning/error' },
+                { name: 'message', type: 'String', default: '""', desc: '文本' },
+                { name: 'duration', type: 'Number', default: '2000', desc: '显示时长（ms），0=不自动关闭' }
+              ]
+            }
+          },
+          // button
+          btnClickCount: 0,
+          // switch
+          sw1: true, sw2: false, sw3: true,
+          // odometer
+          odoVal: 1234,
+          // load-more
+          loadList: Array.from({ length: 10 }, (_, i) => i + 1),
+          loadLoading: false,
+          loadFinished: false,
+          // select
+          selVal: '',
+          selOpts: [
+            { label: '选项一', value: '1' },
+            { label: '选项二', value: '2' },
+            { label: '禁用项', value: '3', disabled: true },
+            { label: '选项四', value: '4' },
+          ],
+          // table
+          tableData: [
+            { id: 1, name: '设备A', status: '在线', ip: '192.168.1.10' },
+            { id: 2, name: '设备B', status: '离线', ip: '192.168.1.11' },
+            { id: 3, name: '设备C', status: '在线', ip: '192.168.1.12' },
+          ],
+          tableColumns: [
+            { label: 'ID', prop: 'id', width: '60', sortable: true },
+            { label: '名称', prop: 'name' },
+            { label: '状态', prop: 'status', align: 'center' },
+            { label: 'IP', prop: 'ip' },
+          ],
+          tableSelLog: '',
+          // date-picker
+          dateVal1: '', dateVal2: '', dateVal3: [], dateVal4: [],
+          // time-picker
+          timeVal: '08:30', timeVal2: '14:00',
+          // year-picker
+          yearVal1: '', yearVal2: [],
+          // month-picker
+          monthVal1: '', monthVal2: [],
+          // tree
+          treeFilter: '',
+          treeData: [
+            {
+              id: 1, label: '根节点', icon: 'folder', expanded: true, children: [
+                { id: 2, label: '子节点1', icon: 'meter' },
+                { id: 3, label: '子节点2', icon: 'data', expanded: true, children: [
+                  { id: 4, label: '叶子节点1', icon: 'default' },
+                  { id: 5, label: '叶子节点2', icon: 'default' },
+                ]},
+                { id: 6, label: '子节点3', icon: 'device' },
+              ]
+            },
+            {
+              id: 7, label: '另一个根', icon: 'folder', children: [
+                { id: 8, label: '子节点4', icon: 'meter' },
+              ]
+            }
+          ],
+          treeLog: '',
+          // dialog
+          dialogVisible: false,
+          dialogInput: '',
+          // bus
+          busLog: '',
+          // fetch
+          fetchLoading: false,
+          fetchLoadingCount: 0,
+          fetchLog: '',
+          // router
+          currentHash: location.hash,
+          // socket
+          wsUrl: 'ws://echo.websocket.org',
+          wsConnected: false,
+          wsLog: '',
+          wsInstance: null,
+          // canvas
+          topoAnim: false,
+          topoAnimId: null,
+          // px2echarts
+          pxInput: 14,
+          winW: window.innerWidth,
+          winH: window.innerHeight,
+        };
+      },
+      computed: {
+        pxResult() {
+          if (typeof LvcUI !== 'undefined' && LvcUI.px2EchartsUrils) {
+            return LvcUI.px2EchartsUrils.px2Echarts(this.pxInput || 0);
+          }
+          return this.pxInput;
+        }
+      },
+      mounted() {
+        // 注册 Bus 监听
+        if (typeof LvcUI !== 'undefined' && LvcUI.Bus) {
+          LvcUI.Bus.on('test', (data) => {
+            this.busLog = `[Bus] 收到 "test" 事件: ${JSON.stringify(data)}`;
+          });
+          LvcUI.Bus.on('getTime', () => {
+            return new Date().toLocaleString();
+          });
+        }
+        // 监听 hashchange
+        window.addEventListener('hashchange', () => {
+          this.currentHash = location.hash;
+        });
+        // 监听 resize
+        window.addEventListener('resize', () => {
+          this.winW = window.innerWidth;
+          this.winH = window.innerHeight;
+        });
+        // 初始绘制拓扑
+        this.$nextTick(() => this.drawTopo());
+      },
+      methods: {
+        // 侧边栏导航：阻止默认锚点跳转，仅做垂直平滑滚动，避免水平滚动条右移
+        goSection(id) {
+          this.active = id;
+          var el = document.getElementById(id);
+          if (el) {
+            var top = el.getBoundingClientRect().top + window.pageYOffset - 20;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        },
+        // button
+        btnClick(e) {
+          this.btnClickCount++;
+        },
+        // load-more
+        loadMore() {
+          if (this.loadLoading || this.loadFinished) return;
+          this.loadLoading = true;
+          setTimeout(() => {
+            const start = this.loadList.length;
+            for (let i = 0; i < 5; i++) {
+              this.loadList.push(start + i + 1);
+            }
+            this.loadLoading = false;
+            if (this.loadList.length >= 30) {
+              this.loadFinished = true;
+            }
+          }, 800);
+        },
+        // table
+        onTableSel(rows) {
+          this.tableSelLog = rows.map(r => r.name).join(', ') || '无';
+        },
+        onTableSort({ prop, order }) {
+          this.tableSelLog = `排序: ${prop} ${order}`;
+        },
+        // tree
+        treeFilterFn(text, node) {
+          if (!text) return true;
+          return node.label.includes(text);
+        },
+        onTreeFilter() {
+          if (this.$refs.demoTree) {
+            this.$refs.demoTree.filter(this.treeFilter);
+          }
+        },
+        onTreeSelect(node) {
+          this.treeLog = `[Tree] 选中: ${node.label}`;
+        },
+        onTreeCheck({ checkedKeys, checkedNodes }) {
+          this.treeLog = `[Tree] 勾选 ${checkedKeys.length} 项: ${checkedKeys.join(', ')}`;
+        },
+        getTreeChecked() {
+          if (this.$refs.demoTree) {
+            const keys = this.$refs.demoTree.getCheckedKeys();
+            this.treeLog = `[Tree] 当前勾选: ${keys.join(', ') || '无'}`;
+          }
+        },
+        // dialog
+        onDialogConfirm() {
+          if (!this.dialogInput) {
+            LvcUI.LvcMessage.warning('请输入内容');
+            return;
+          }
+          LvcUI.LvcMessage.success('提交成功: ' + this.dialogInput);
+          this.dialogVisible = false;
+          this.dialogInput = '';
+        },
+        showCmdDialog() {
+          LvcUI.lvcDialog.show({
+            title: '命令式对话框',
+            content: '这是通过 lvcDialog.show() 调用的对话框',
+            onConfirm: () => {
+              LvcUI.LvcMessage.success('确认');
+            }
+          });
+        },
+        showConfirmDialog() {
+          LvcUI.lvcDialog.show({
+            title: '确认删除',
+            content: '确定要删除这条记录吗？此操作不可撤销。',
+            confirmText: '删除',
+            cancelText: '取消',
+            onConfirm: async () => {
+              LvcUI.LvcLoading.show('正在删除...');
+              await new Promise(r => setTimeout(r, 1000));
+              LvcUI.LvcLoading.close();
+              LvcUI.LvcMessage.success('删除成功');
+            }
+          });
+        },
+        // bus
+        busEmit() {
+          LvcUI.Bus.emit('test', { msg: 'hello', time: Date.now() });
+        },
+        async busRequest() {
+          try {
+            const result = await LvcUI.Bus.request('getTime');
+            this.busLog = `[Bus.request] 响应: ${result}`;
+          } catch (e) {
+            this.busLog = `[Bus.request] 超时或无响应`;
+          }
+        },
+        // fetch
+        async testFetch() {
+          if (typeof LvcUI === 'undefined' || !LvcUI.createFetch) {
+            this.fetchLog = 'createFetch 不可用';
+            return;
+          }
+          const http = LvcUI.createFetch({ baseURL: 'https://httpbin.org' });
+          http.onLoading((count) => {
+            this.fetchLoadingCount = count;
+            this.fetchLoading = count > 0;
+          });
+          try {
+            this.fetchLog = '请求中...';
+            const data = await http.get('/get', { params: { from: 'lvc-ui-demo' } });
+            this.fetchLog = `请求成功:\nurl: ${data.url}\nargs: ${JSON.stringify(data.args)}`;
+          } catch (e) {
+            this.fetchLog = `请求失败: ${e.message}`;
+          }
+        },
+        // router
+        routerPush(name) {
+          location.hash = `#/${name}`;
+          this.currentHash = location.hash;
+        },
+        // socket
+        wsConnect() {
+          if (this.wsConnected) return;
+          if (typeof LvcUI === 'undefined' || !LvcUI.SocketClient) {
+            this.wsLog = 'SocketClient 不可用';
+            return;
+          }
+          try {
+            this.wsLog = `连接中 ${this.wsUrl}...`;
+            this.wsInstance = new LvcUI.SocketClient(this.wsUrl, {
+              maxReconnectAttempts: 2,
+              heartbeatInterval: 10000,
+            });
+            this.wsInstance.on('open', () => {
+              this.wsConnected = true;
+              this.wsLog = `已连接 ${this.wsUrl}`;
+            });
+            this.wsInstance.on('close', () => {
+              this.wsConnected = false;
+              this.wsLog = '连接已关闭';
+            });
+            this.wsInstance.on('error', () => {
+              this.wsLog = '连接错误';
+            });
+            this.wsInstance.on('message', (msg) => {
+              this.wsLog = `收到: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`;
+            });
+          } catch (e) {
+            this.wsLog = `连接异常: ${e.message}`;
+          }
+        },
+        wsClose() {
+          if (this.wsInstance) {
+            this.wsInstance.close();
+            this.wsInstance = null;
+            this.wsConnected = false;
+          }
+        },
+        // canvas
+        drawTopo() {
+          if (typeof LvcUI === 'undefined' || !LvcUI.CanvasTopologyUtils) return;
+          const canvas = this.$refs.topoCanvas;
+          if (!canvas) return;
+          const topo = new LvcUI.CanvasTopologyUtils('topoCanvas', '.demo-card');
+          topo.init();
+          topo.clear();
+          // 节点
+          topo.drawNode(200, 80, 18, '#00e5ff', '入口', false, 30, 12);
+          topo.drawNode(450, 50, 18, '#4caf50', '服务A', false, 30, 12);
+          topo.drawNode(450, 130, 18, '#ff9800', '服务B', false, 30, 12);
+          topo.drawNode(700, 90, 18, '#e91e63', '出口', false, 30, 12);
+          // 静态连线
+          topo.drawDashLine([[218, 80], [432, 50]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
+          topo.drawDashLine([[218, 80], [432, 130]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
+          topo.drawDashLine([[468, 50], [682, 90]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
+          topo.drawDashLine([[468, 130], [682, 90]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
+          this._topoInstance = topo;
+        },
+        toggleTopoAnim() {
+          this.topoAnim = !this.topoAnim;
+          if (this.topoAnim) {
+            const animate = () => {
+              if (!this.topoAnim || !this._topoInstance) return;
+              const topo = this._topoInstance;
+              topo.clear();
+              topo.drawNode(200, 80, 18, '#00e5ff', '入口', false, 30, 12);
+              topo.drawNode(450, 50, 18, '#4caf50', '服务A', false, 30, 12);
+              topo.drawNode(450, 130, 18, '#ff9800', '服务B', false, 30, 12);
+              topo.drawNode(700, 90, 18, '#e91e63', '出口', false, 30, 12);
+              const offset = Date.now() / 30;
+              topo.drawFlowLine([[218, 80], [432, 50]], { offset });
+              topo.drawFlowLine([[218, 80], [432, 130]], { offset: offset + 10 });
+              topo.drawFlowLine([[468, 50], [682, 90]], { offset });
+              topo.drawFlowLine([[468, 130], [682, 90]], { offset: offset + 10 });
+              this.topoAnimId = requestAnimationFrame(animate);
+            };
+            animate();
+          } else {
+            if (this.topoAnimId) cancelAnimationFrame(this.topoAnimId);
+            this.drawTopo();
+          }
+        },
+        // loading
+        showLoading() {
+          LvcUI.LvcLoading.show();
+          setTimeout(() => LvcUI.LvcLoading.close(), 2000);
+        },
+        showLoadingText() {
+          const inst = LvcUI.LvcLoading.show('数据加载中...');
+          setTimeout(() => inst.setText('即将完成...'), 1000);
+          setTimeout(() => inst.close(), 2000);
+        },
+        closeLoading() {
+          LvcUI.LvcLoading.close();
+        },
+        // message
+        msgSuccess() { LvcUI.LvcMessage.success('操作成功'); },
+        msgWarning() { LvcUI.LvcMessage.warning('请注意风险'); },
+        msgInfo() { LvcUI.LvcMessage.info('这是一条提示信息'); },
+        msgError() { LvcUI.LvcMessage.error('操作失败，请重试'); },
+      },
+      beforeDestroy() {
+        if (this.topoAnimId) cancelAnimationFrame(this.topoAnimId);
+        if (this.wsInstance) this.wsInstance.close();
+      }
+    });
+  </script>
+</body>
 </html>
