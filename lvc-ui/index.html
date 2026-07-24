@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LvcUI 工具库 - 组件文档</title>
+  <title>LvcUI 组件库 - 组件文档</title>
   <script src="https://unpkg.com/vue@2.7.16/dist/vue.min.js"></script>
   <link rel="stylesheet" href="./dist/odometer-theme-minimal.css" />
   <script src="./dist/odometer.min.js"></script>
-  <script src="https://unpkg.com/xlsx-js-style/dist/xlsx.bundle.js"></script>
   <script src="./dist/lvc-ui.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -298,7 +297,7 @@
     <div class="app">
       <!-- ===== 侧边栏 ===== -->
       <aside class="sidebar" :class="{ open: sidebarOpen }" @click="sidebarOpen = false">
-        <div class="logo">LvcUI <span>v1.0.0</span></div>
+        <div class="logo">LvcUI <span>v0.1.5</span></div>
         <div class="nav-group">
           <div class="nav-group-title">开始</div>
           <a class="nav-item" :class="{active: active==='intro'}" href="#intro" @click.prevent="goSection('intro')">介绍</a>
@@ -306,12 +305,12 @@
           <a class="nav-item" :class="{active: active==='quickstart'}" href="#quickstart" @click.prevent="goSection('quickstart')">快速开始</a>
         </div>
         <div class="nav-group">
-          <div class="nav-group-title">组件</div>
+          <div class="nav-group-title">声明式组件</div>
           <a v-for="c in components" :key="c.id" class="nav-item" :class="{active: active===c.id}" :href="'#'+c.id" @click.prevent="goSection(c.id)">{{ c.name }}</a>
         </div>
         <div class="nav-group">
-          <div class="nav-group-title">工具</div>
-          <a v-for="t in tools" :key="t.id" class="nav-item" :class="{active: active===t.id}" :href="'#'+t.id" @click.prevent="goSection(t.id)">{{ t.name }}</a>
+          <div class="nav-group-title">命令式组件</div>
+          <a v-for="c in cmdComponents" :key="c.id" class="nav-item" :class="{active: active===c.id}" :href="'#'+c.id" @click.prevent="goSection(c.id)">{{ c.name }}</a>
         </div>
       </aside>
 
@@ -321,20 +320,20 @@
         <!-- ===== 介绍 ===== -->
         <section id="intro" class="section">
           <div class="hero">
-            <h1>Lvc<span>UI</span><span class="ver">v1.0.0</span></h1>
-            <p>LVC 工具库 — Vue 2.x 组件 + 工具集合 · UMD 单文件打包</p>
-            <p style="font-size:13px;">面向大屏 / 可视化 / 后台管理场景，全部组件和工具打包为单个 UMD 文件，一次引入即可使用。</p>
+            <h1>Lvc<span>UI</span><span class="ver">v0.1.5</span></h1>
+            <p>LVC 组件库 — Vue 2.x 组件集合 · UMD 单文件打包</p>
+            <p style="font-size:13px;">面向大屏 / 可视化 / 后台管理场景，仅包含 Vue 组件，一次引入即可使用。</p>
             <div class="hero-stats">
               <div class="hero-stat">
-                <div class="hero-stat-num">12</div>
+                <div class="hero-stat-num">15</div>
                 <div class="hero-stat-label">组件</div>
               </div>
               <div class="hero-stat">
-                <div class="hero-stat-num">9</div>
-                <div class="hero-stat-label">工具</div>
+                <div class="hero-stat-num">12+3</div>
+                <div class="hero-stat-label">声明式+命令式</div>
               </div>
               <div class="hero-stat">
-                <div class="hero-stat-num">128KB</div>
+                <div class="hero-stat-num">100KB</div>
                 <div class="hero-stat-label">压缩后</div>
               </div>
             </div>
@@ -360,6 +359,8 @@
           <code-block :code="qsScript" lang="html"></code-block>
           <div class="sub-title">使用示例</div>
           <code-block :code="qsUsage" lang="html"></code-block>
+          <div class="sub-title">CDN 方式访问命令式组件</div>
+          <code-block :code="qsCdn" lang="js"></code-block>
         </section>
 
         <!-- ===== lvc-button ===== -->
@@ -646,116 +647,6 @@
           <doc-table title="lvcDialog options" :columns="cols.cfg3" :rows="docs['lvc-dialog'].cmdOptions"></doc-table>
         </section>
 
-        <!-- ===== Bus ===== -->
-        <section id="bus" class="section">
-          <h2 class="section-title">Bus 跨窗口通讯总线</h2>
-          <p class="section-desc">{{ docs['bus'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['bus'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-card-title">事件监听 / 触发 / 请求-响应</div>
-            <div class="demo-row">
-              <lvc-button type="primary" @click="busEmit">触发 "test" 事件</lvc-button>
-              <lvc-button class="outline" @click="busRequest">请求 "getTime"</lvc-button>
-            </div>
-            <div class="output" v-if="busLog">{{ busLog }}</div>
-          </div>
-          <doc-table title="API" :columns="cols.method4" :rows="docs['bus'].api"></doc-table>
-        </section>
-
-        <!-- ===== createFetch ===== -->
-        <section id="createfetch" class="section">
-          <h2 class="section-title">createFetch HTTP 请求封装</h2>
-          <p class="section-desc">{{ docs['createfetch'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['createfetch'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-card-title">创建实例 + loading 监听</div>
-            <div class="demo-row">
-              <lvc-button type="primary" @click="testFetch">发起 GET 请求</lvc-button>
-              <span class="demo-value" v-if="fetchLoading">loading: {{ fetchLoadingCount }}</span>
-            </div>
-            <div class="output" v-if="fetchLog">{{ fetchLog }}</div>
-          </div>
-          <doc-table title="全局配置" :columns="cols.cfg4" :rows="docs['createfetch'].config"></doc-table>
-          <doc-table title="实例方法" :columns="cols.method4" :rows="docs['createfetch'].methods"></doc-table>
-        </section>
-
-        <!-- ===== createRouter ===== -->
-        <section id="createrouter" class="section">
-          <h2 class="section-title">createRouter Hash 路由</h2>
-          <p class="section-desc">{{ docs['createrouter'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['createrouter'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-row">
-              <lvc-button class="outline" @click="routerPush('home')">push('home')</lvc-button>
-              <lvc-button class="outline" @click="routerPush('settings')">push('settings')</lvc-button>
-              <span class="demo-value">当前 hash: {{ currentHash }}</span>
-            </div>
-          </div>
-          <doc-table title="配置" :columns="cols.cfg3" :rows="docs['createrouter'].config"></doc-table>
-          <doc-table title="router 方法" :columns="cols.method3" :rows="docs['createrouter'].methods"></doc-table>
-        </section>
-
-        <!-- ===== SocketClient ===== -->
-        <section id="socketclient" class="section">
-          <h2 class="section-title">SocketClient WebSocket 客户端</h2>
-          <p class="section-desc">{{ docs['socketclient'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['socketclient'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-card-title">连接测试</div>
-            <div class="demo-row">
-              <input v-model="wsUrl" placeholder="ws://..."
-                     style="flex:1;background:#07111e;border:1px solid #1e4469;color:#fff;padding:6px 10px;border-radius:4px;outline:none;font-size:13px;" />
-              <lvc-button type="primary" @click="wsConnect">连接</lvc-button>
-              <lvc-button type="danger" @click="wsClose" :disabled="!wsConnected">断开</lvc-button>
-            </div>
-            <div class="demo-row">
-              <span class="demo-value">状态: {{ wsConnected ? '已连接' : '未连接' }}</span>
-            </div>
-            <div class="output" v-if="wsLog">{{ wsLog }}</div>
-          </div>
-          <doc-table title="配置" :columns="cols.cfg4" :rows="docs['socketclient'].config"></doc-table>
-          <doc-table title="实例方法" :columns="cols.method3" :rows="docs['socketclient'].methods"></doc-table>
-        </section>
-
-        <!-- ===== CanvasTopologyUtils ===== -->
-        <section id="canvastopologyutils" class="section">
-          <h2 class="section-title">CanvasTopologyUtils Canvas 拓扑工具</h2>
-          <p class="section-desc">{{ docs['canvastopologyutils'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['canvastopologyutils'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-card-title">拓扑图绘制</div>
-            <div style="position:relative;width:100%;height:280px;background:#07111e;border:1px solid #1e4469;border-radius:4px;">
-              <canvas id="topoCanvas" ref="topoCanvas" style="width:100%;height:100%;"></canvas>
-            </div>
-            <div class="demo-row" style="margin-top:12px;">
-              <lvc-button type="primary" @click="drawTopo">绘制拓扑</lvc-button>
-              <lvc-button class="outline" @click="toggleTopoAnim">{{ topoAnim ? '停止动画' : '启动流光' }}</lvc-button>
-            </div>
-          </div>
-          <doc-table title="构造函数参数" :columns="cols.param3" :rows="docs['canvastopologyutils'].ctor"></doc-table>
-          <doc-table title="实例方法" :columns="cols.method3" :rows="docs['canvastopologyutils'].methods"></doc-table>
-        </section>
-
-        <!-- ===== px2EchartsUrils ===== -->
-        <section id="px2echartsurils" class="section">
-          <h2 class="section-title">px2EchartsUrils ECharts 像素适配</h2>
-          <p class="section-desc">{{ docs['px2echartsurils'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['px2echartsurils'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-row">
-              <span class="demo-label">设计稿值:</span>
-              <input v-model.number="pxInput" type="number" style="width:80px;background:#07111e;border:1px solid #1e4469;color:#fff;padding:6px 10px;border-radius:4px;outline:none;" />
-              <span class="demo-label">px</span>
-              <span class="demo-value">→ 适配后: {{ pxResult }} px</span>
-            </div>
-            <div class="demo-row">
-              <span class="demo-label">屏幕尺寸:</span>
-              <span class="demo-value">{{ winW }} × {{ winH }}</span>
-            </div>
-          </div>
-          <doc-table title="API 参数" :columns="cols.param3" :rows="docs['px2echartsurils'].api"></doc-table>
-        </section>
-
         <!-- ===== LvcLoading ===== -->
         <section id="lvcloading" class="section">
           <h2 class="section-title">LvcLoading 全局 Loading</h2>
@@ -785,30 +676,6 @@
             </div>
           </div>
           <doc-table title="options" :columns="cols.cfg4" :rows="docs['lvcmessage'].options"></doc-table>
-        </section>
-
-        <!-- ===== exportToExcel ===== -->
-        <section id="exportexcel" class="section">
-          <h2 class="section-title"><code>exportToExcel</code> Excel 导出</h2>
-          <p class="section-desc">{{ docs['exportexcel'].desc }}</p>
-          <code-block v-for="(ex, i) in docs['exportexcel'].examples" :key="i" :code="ex.code" :lang="ex.lang" :title="ex.title"></code-block>
-          <div class="demo-card">
-            <div class="demo-card-title">导出演示</div>
-            <div class="demo-row">
-              <lvc-button type="primary" @click="exportCSV">导出 CSV</lvc-button>
-              <lvc-button type="success" @click="exportXLSX">导出 XLSX</lvc-button>
-            </div>
-            <div class="demo-row">
-              <span class="demo-label">表头:</span>
-              <span class="demo-value">{{ exportData.headers.join(' | ') }}</span>
-            </div>
-            <div class="demo-row">
-              <span class="demo-label">数据:</span>
-              <span class="demo-value">{{ exportData.data.length }} 行</span>
-            </div>
-            <div class="output" v-if="exportLog">{{ exportLog }}</div>
-          </div>
-          <doc-table title="参数" :columns="cols.cfg4" :rows="docs['exportexcel'].params"></doc-table>
         </section>
 
       </main>
@@ -908,16 +775,9 @@
             { id: 'lvc-tree', name: 'Tree 树形控件' },
             { id: 'lvc-dialog', name: 'Dialog 对话框' },
           ],
-          tools: [
-            { id: 'bus', name: 'Bus 通讯总线' },
-            { id: 'createfetch', name: 'createFetch HTTP' },
-            { id: 'createrouter', name: 'createRouter 路由' },
-            { id: 'socketclient', name: 'SocketClient WS' },
-            { id: 'canvastopologyutils', name: 'CanvasTopology' },
-            { id: 'px2echartsurils', name: 'px2Echarts 像素适配' },
+          cmdComponents: [
             { id: 'lvcloading', name: 'LvcLoading' },
             { id: 'lvcmessage', name: 'LvcMessage' },
-            { id: 'exportexcel', name: 'exportToExcel 导出' },
           ],
           // 安装 / 快速开始 代码
           installCode: 'npm install lvc-ui',
@@ -933,11 +793,19 @@ Vue.use(LvcUI);`,
 <script src="https://unpkg.com/vue@2.7.16/dist/vue.js"><\/script>
 <!-- 引入 LvcUI（压缩版） -->
 <script src="https://unpkg.com/lvc-ui/dist/lvc-ui.min.js"><\/script>
-<!-- window.Vue 存在时会自动注册所有组件，window.LvcUI 可用 -->`,
+<!-- window.Vue 存在时会自动注册所有组件，window.KivaUI 可用 -->`,
           qsUsage: `<template>
   <lvc-button type="primary" @click="onClick">点击</lvc-button>
   <lvc-select v-model="val" :options="opts" />
 </template>`,
+          qsCdn: `// CDN 方式下，所有导出挂在 window.KivaUI 上
+const { LvcLoading, LvcMessage, lvcDialog } = window.KivaUI;
+
+LvcLoading.show('加载中...');
+LvcMessage.success('保存成功');
+lvcDialog.show({ title: '提示', content: '操作完成' });
+
+// Vue.use(LvcUI) 后，组件内还可用 this.$lvcLoading / this.$lvcMessage`,
           // 表格列定义
           cols: {
             props: [
@@ -975,11 +843,6 @@ Vue.use(LvcUI);`,
             method3: [
               { key: 'name', label: '方法名', cls: 'c-name' },
               { key: 'params', label: '参数', cls: 'c-type' },
-              { key: 'desc', label: '说明', cls: 'c-desc' }
-            ],
-            param3: [
-              { key: 'name', label: '参数', cls: 'c-name' },
-              { key: 'type', label: '类型', cls: 'c-type' },
               { key: 'desc', label: '说明', cls: 'c-desc' }
             ],
             tableCols: [
@@ -1472,255 +1335,8 @@ lvcDialog.show({
                 { name: 'onCancel', type: 'Function', desc: '取消回调' }
               ]
             },
-            'bus': {
-              desc: '跨 iframe / 跨标签页的事件总线，支持 request-response 模式。',
-              examples: [{
-                lang: 'js', title: '基础用法',
-                code: `import { Bus } from 'lvc-ui';
-
-// 监听
-Bus.on('refresh', () => loadData());
-
-// 监听并返回数据（供 request 调用）
-Bus.on('getUser', () => ({ name: 'admin', role: 'root' }));
-
-// 触发
-Bus.emit('refresh', { id: 1 });
-
-// 请求-响应
-const user = await Bus.request('getUser');
-console.log(user); // { name: 'admin', role: 'root' }`
-              }],
-              api: [
-                { name: 'on', params: 'event, fn', ret: '-', desc: '监听事件' },
-                { name: 'off', params: 'event, fn?', ret: '-', desc: '移除监听（不传 fn 清空该事件全部）' },
-                { name: 'once', params: 'event, fn', ret: '-', desc: '监听一次' },
-                { name: 'emit', params: 'event, data', ret: '-', desc: '触发事件' },
-                { name: 'request', params: 'event, data, timeout=5000', ret: 'Promise', desc: '请求-响应（超时 reject "timeout"）' }
-              ]
-            },
-            'createfetch': {
-              desc: '基于 fetch 的 HTTP 客户端工厂，支持拦截器、重试、缓存、去重、轮询、loading 监听。',
-              examples: [
-                {
-                  lang: 'js', title: '工厂函数',
-                  code: `import { createFetch } from 'lvc-ui';
-
-const http = createFetch({
-  baseURL: '/api',
-  timeout: 10000,
-  retries: 1,
-  getToken: () => localStorage.getItem('myToken')
-});`
-                },
-                {
-                  lang: 'js', title: '轮询示例',
-                  code: `const poller = http.poll('/metrics', {}, {
-  interval: 3000,
-  callback: (data) => console.log('metrics:', data)
-});
-
-poller.on('error', err => console.error(err));
-
-// 停止
-poller.stop();`
-                },
-                {
-                  lang: 'js', title: '拦截器示例',
-                  code: `http.interceptors.request.handlers.push({
-  fulfilled: (config) => {
-    config.headers['X-Custom'] = 'value';
-    return config;
-  },
-  rejected: (err) => {}
-});`
-                }
-              ],
-              config: [
-                { name: 'baseURL', type: 'String', default: '""', desc: '基础 URL' },
-                { name: 'headers', type: 'Object', default: '{ "Content-Type": "application/json" }', desc: '默认请求头' },
-                { name: 'timeout', type: 'Number', default: '10000', desc: '超时（ms）' },
-                { name: 'retries', type: 'Number', default: '1', desc: '重试次数' },
-                { name: 'retryDelay', type: 'Number', default: '500', desc: '重试延迟' },
-                { name: 'cache', type: 'Number', default: '0', desc: 'GET 缓存时间（ms），0=不缓存' },
-                { name: 'credentials', type: 'String', default: '"same-origin"', desc: 'fetch credentials' },
-                { name: 'responseType', type: 'String', default: '"json"', desc: 'json/text/blob' },
-                { name: 'concurrency', type: 'Number', default: 'Infinity', desc: '最大并发' },
-                { name: 'dedupe', type: 'Boolean', default: 'true', desc: '相同请求去重' },
-                { name: 'debounce', type: 'Number', default: '200', desc: '去抖（ms），0=不去抖' },
-                { name: 'getToken', type: 'Function', default: '() => localStorage.getItem("emstoken")', desc: '取 token' },
-                { name: 'refreshToken', type: 'AsyncFunction', default: '-', desc: '刷新 token' },
-                { name: 'onRefreshFail', type: 'Function', default: '-', desc: '刷新失败回调' },
-                { name: 'onError', type: 'Function', default: '-', desc: '错误回调' },
-                { name: 'showLog', type: 'Boolean', default: 'false', desc: '打印日志' }
-              ],
-              methods: [
-                { name: 'get', params: 'url, opts={}', ret: 'Promise', desc: 'GET' },
-                { name: 'post', params: 'url, body, opts={}', ret: 'Promise', desc: 'POST' },
-                { name: 'put', params: 'url, body, opts={}', ret: 'Promise', desc: 'PUT' },
-                { name: 'delete', params: 'url, opts={}', ret: 'Promise', desc: 'DELETE' },
-                { name: 'request', params: 'options', ret: 'Promise', desc: '通用请求' },
-                { name: 'poll', params: 'url, payload={}, options={}', ret: 'poller', desc: '启动轮询' },
-                { name: 'stopAllPoll', params: '-', ret: '-', desc: '停止所有轮询' },
-                { name: 'createCancelToken', params: '-', ret: '{ signal, cancel }', desc: '创建可取消 token' },
-                { name: 'onLoading', params: 'cb', ret: 'unsubscribe', desc: '监听 loading 计数' },
-                { name: 'setToken', params: 'token | null', ret: '-', desc: '设置/清除 token' },
-                { name: 'interceptors', params: '-', ret: '-', desc: '拦截器 { request, response }' }
-              ]
-            },
-            'createrouter': {
-              desc: '轻量级 Hash 路由，支持前置守卫、嵌套层级、登录鉴权。',
-              examples: [
-                {
-                  lang: 'js', title: '工厂函数',
-                  code: `import { createRouter } from 'lvc-ui';
-
-const router = createRouter({
-  routes: {
-    home: { path: '#/home', meta: { requiresAuth: true } },
-    settings: '#/settings',
-    about: { path: '#/about' }
-  },
-  default: 'home',
-  level: 1
-});`
-                },
-                {
-                  lang: 'js', title: '使用示例',
-                  code: `router.init(this);
-
-router.beforeEach((to, from, next) => {
-  console.log('跳转:', from, '->', to);
-  next();
-});
-
-router.push('settings');`
-                }
-              ],
-              config: [
-                { name: 'routes', type: 'Object', desc: '路由表 { name: "path" | { path, meta } }' },
-                { name: 'default', type: 'String', desc: '默认路由名' },
-                { name: 'level', type: 'Number', desc: '路由层级（hash 第几段）' },
-                { name: 'loginPage', type: 'String', desc: '登录页跳转地址' }
-              ],
-              methods: [
-                { name: 'init', params: 'vm', desc: '初始化（绑定 Vue 实例，监听 hashchange）' },
-                { name: 'push', params: 'name', desc: '跳转' },
-                { name: 'beforeEach', params: 'fn', desc: '注册前置守卫 fn(to, from, next)' },
-                { name: 'resolve', params: '-', desc: '解析当前 hash' }
-              ]
-            },
-            'socketclient': {
-              desc: '带心跳、自动重连、消息分发的 WebSocket 客户端。',
-              examples: [
-                {
-                  lang: 'js', title: '构造函数',
-                  code: `import { SocketClient } from 'lvc-ui';
-
-const ws = new SocketClient('ws://example.com/ws', {
-  heartbeatInterval: 30000,
-  reconnectInterval: 5000,
-  maxReconnectAttempts: 5,
-  pingMessage: 'ping'
-});`
-                },
-                {
-                  lang: 'js', title: '使用示例',
-                  code: `const ws = new SocketClient('ws://localhost:8080');
-
-// 监听业务事件（由后端消息的 topic/type 字段决定）
-ws.on('chat', (data) => {
-  console.log('收到消息:', data);
-});
-
-// 监听原始消息
-ws.on('message', (msg) => {
-  console.log('raw:', msg);
-});
-
-// 发送
-ws.send({ type: 'chat', text: 'hello' });
-
-// 关闭
-ws.close();`
-                }
-              ],
-              config: [
-                { name: 'heartbeatInterval', type: 'Number', default: '30000', desc: '心跳间隔（ms）' },
-                { name: 'reconnectInterval', type: 'Number', default: '5000', desc: '重连基础间隔' },
-                { name: 'maxReconnectAttempts', type: 'Number', default: '5', desc: '最大重连次数（-1=无限）' },
-                { name: 'pingMessage', type: 'String', default: '"ping"', desc: '心跳内容' }
-              ],
-              methods: [
-                { name: 'send', params: 'data: Object|String', desc: '发送消息（未连接时入队列）' },
-                { name: 'on', params: 'eventName, callback', desc: '监听事件' },
-                { name: 'off', params: 'eventName, callback?', desc: '移除监听' },
-                { name: 'close', params: '-', desc: '手动关闭（不再重连）' }
-              ]
-            },
-            'canvastopologyutils': {
-              desc: 'Canvas 拓扑图绘制工具，支持节点、连线、流光动画、图片缓存、DPR 适配。',
-              examples: [{
-                lang: 'js', title: '基础用法',
-                code: `const topo = new CanvasTopologyUtils('topoCanvas', '.topo-container', 1280);
-topo.init();
-
-// 绘制节点
-topo.drawNode(100, 100, 20, '#00e5ff', '节点A');
-topo.drawNode(300, 100, 20, '#ff9800', '节点B');
-
-// 绘制流光连线（requestAnimationFrame 中持续更新 offset）
-function animate() {
-  topo.clear();
-  topo.drawNode(100, 100, 20, '#00e5ff', '节点A');
-  topo.drawNode(300, 100, 20, '#ff9800', '节点B');
-  topo.drawFlowLine([[120, 100], [280, 100]], { offset: Date.now() / 30 });
-  requestAnimationFrame(animate);
-}
-animate();`
-              }],
-              ctor: [
-                { name: 'canvasId', type: 'String', desc: 'Canvas 元素 ID' },
-                { name: 'containerSelector', type: 'String', desc: '父容器选择器（用于尺寸适配）' },
-                { name: 'baseWidth', type: 'Number', desc: '设计稿基准宽度，默认 1280' }
-              ],
-              methods: [
-                { name: 'init', params: '-', desc: '初始化画布' },
-                { name: 's', params: 'val: Number', desc: '缩放转换（设计稿 px → 实际 px）' },
-                { name: 'clear', params: '-', desc: '清空画布' },
-                { name: 'drawNode', params: 'x, y, r, color, label, isSub=false, labelY=15, fontS=12', desc: '绘制拓扑节点' },
-                { name: 'drawNodeImgText', params: '{ url, x, y, w, h, text, ... }', desc: '绘制图片+文字节点' },
-                { name: 'drawFlowLine', params: 'points, options', desc: '绘制流光动画虚线' },
-                { name: 'drawDashLine', params: 'points, options', desc: '绘制虚线' },
-                { name: 'drawImage', params: 'url, x, y, w, h, isCenter=true', desc: '绘制图片' },
-                { name: 'drawText', params: 'text, x, y, options', desc: '绘制文字' },
-                { name: 'drawCircle', params: 'x, y, r, options', desc: '绘制圆' },
-                { name: 'drawPolygon', params: 'points, options', desc: '绘制多边形' },
-                { name: 'drawFlowCurve', params: 'p1, p2, offset', desc: '绘制流动贝塞尔连线' }
-              ]
-            },
-            'px2echartsurils': {
-              desc: '将设计稿 px 转换为当前屏幕实际 px（模拟 vmin 逻辑，用于 ECharts 字号适配）。',
-              examples: [{
-                lang: 'js', title: '基础用法',
-                code: `const fontSize = px2EchartsUrils.px2Echarts(14); // 在 1920×1080 屏幕上可能返回 16.80
-
-// 在 ECharts 配置中使用
-const option = {
-  xAxis: {
-    axisLabel: { fontSize: px2EchartsUrils.px2Echarts(12) }
-  }
-};`
-              }],
-              api: [
-                { name: 'pxValue', type: 'Number', desc: '设计稿像素值' },
-                { name: 'desWidth', type: 'Number', desc: '设计稿宽度，默认 1280' },
-                { name: 'desHeight', type: 'Number', desc: '设计稿高度，默认 800' },
-                { name: 'keep1px', type: 'Boolean', desc: '是否对 1px 做保护，默认 true' }
-              ]
-            },
             'lvcloading': {
-              desc: '全局加载遮罩，支持单例、文本更新、过渡动画。',
+              desc: '全局加载遮罩，支持单例、文本更新、过渡动画。Vue.use 后可通过 this.$lvcLoading 访问。',
               examples: [{
                 lang: 'js', title: '基础用法',
                 code: `// 浏览器全局
@@ -1743,7 +1359,7 @@ inst.close();`
               ]
             },
             'lvcmessage': {
-              desc: '全局消息提示，支持 info/success/warning/error 四种类型。',
+              desc: '全局消息提示，支持 info/success/warning/error 四种类型。Vue.use 后可通过 this.$lvcMessage 访问。',
               examples: [{
                 lang: 'js', title: '基础用法',
                 code: `LvcMessage.success('保存成功');
@@ -1758,64 +1374,6 @@ this.$lvcMessage.error('出错了');`
                 { name: 'type', type: 'String', default: '"info"', desc: 'info/success/warning/error' },
                 { name: 'message', type: 'String', default: '""', desc: '文本' },
                 { name: 'duration', type: 'Number', default: '2000', desc: '显示时长（ms），0=不自动关闭' }
-              ]
-            },
-            'exportexcel': {
-              desc: '导出 Excel/CSV 文件。CSV 格式默认无依赖，XLSX 格式需引入 xlsx-js-style 库（暴露为 window.XLSX），支持列宽、表头合并、单元格样式配置。',
-              examples: [
-                {
-                  lang: 'js', title: '导出 CSV（默认，无依赖）',
-                  code: `// CSV 格式，无需额外依赖
-LvcUI.exportToExcel({
-  fileName: '用户列表',
-  headers: ['姓名', '年龄', '城市'],
-  data: [
-    ['张三', 25, '北京'],
-    ['李四', 30, '上海'],
-    ['王五', 28, '深圳']
-  ],
-  format: 'csv'
-}).then(() => {
-  console.log('CSV 导出成功');
-});`
-                },
-                {
-                  lang: 'html', title: '导出 XLSX（需引入 xlsx-js-style）',
-                  code: `<!-- 先引入 xlsx-js-style 库（暴露全局 window.XLSX） -->
-<script src="https://unpkg.com/xlsx-js-style/dist/xlsx.bundle.js"><\/script>
-
-<script>
-LvcUI.exportToExcel({
-  fileName: '销售报表',
-  headers: ['区域', 'Q1', 'Q2', 'Q3', 'Q4'],
-  data: [
-    ['华北', 120, 150, 180, 200],
-    ['华南', 200, 220, 240, 260]
-  ],
-  format: 'xlsx',
-  colWidth: { 1: 20, 2: 12, 3: 12, 4: 12, 5: 12 },
-  headerMerges: [
-    { row: 0, col: 1, rowspan: 1, colspan: 4, value: '季度销售（万元）' }
-  ],
-  cellStyle: {
-    alignment: { vertical: 'center', horizontal: 'center' },
-    font: { name: 'Calibri', sz: 11, bold: false },
-    fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
-  }
-}).then(() => {
-  console.log('XLSX 导出成功');
-});
-<\/script>`
-                }
-              ],
-              params: [
-                { name: 'fileName', type: 'String', default: '"导出数据"', desc: '导出文件名（不含扩展名）' },
-                { name: 'headers', type: 'Array', default: '-', desc: '表头数组（最后一行表头）' },
-                { name: 'data', type: 'Array', default: '-', desc: '二维数据数组，每行为一条记录' },
-                { name: 'format', type: 'String', default: '"csv"', desc: '导出格式：csv / xlsx' },
-                { name: 'colWidth', type: 'Object', default: '-', desc: '列宽配置（仅 xlsx 有效，key 从 1 开始，如 {1: 50, 3: 100}）' },
-                { name: 'headerMerges', type: 'Array', default: '-', desc: '表头合并配置（仅 xlsx 有效）{ row, col, rowspan, colspan, value }' },
-                { name: 'cellStyle', type: 'Object', default: '-', desc: '单元格样式配置（仅 xlsx 有效）含 alignment / font / fill' }
               ]
             }
           },
@@ -1881,68 +1439,7 @@ LvcUI.exportToExcel({
           // dialog
           dialogVisible: false,
           dialogInput: '',
-          // bus
-          busLog: '',
-          // fetch
-          fetchLoading: false,
-          fetchLoadingCount: 0,
-          fetchLog: '',
-          // router
-          currentHash: location.hash,
-          // socket
-          wsUrl: 'ws://echo.websocket.org',
-          wsConnected: false,
-          wsLog: '',
-          wsInstance: null,
-          // canvas
-          topoAnim: false,
-          topoAnimId: null,
-          // px2echarts
-          pxInput: 14,
-          winW: window.innerWidth,
-          winH: window.innerHeight,
-          // exportExcel
-          exportData: {
-            fileName: '用户列表',
-            headers: ['姓名', '年龄', '城市'],
-            data: [
-              ['张三', 25, '北京'],
-              ['李四', 30, '上海'],
-              ['王五', 28, '深圳']
-            ]
-          },
-          exportLog: '',
         };
-      },
-      computed: {
-        pxResult() {
-          if (typeof LvcUI !== 'undefined' && LvcUI.px2EchartsUrils) {
-            return LvcUI.px2EchartsUrils.px2Echarts(this.pxInput || 0);
-          }
-          return this.pxInput;
-        }
-      },
-      mounted() {
-        // 注册 Bus 监听
-        if (typeof LvcUI !== 'undefined' && LvcUI.Bus) {
-          LvcUI.Bus.on('test', (data) => {
-            this.busLog = `[Bus] 收到 "test" 事件: ${JSON.stringify(data)}`;
-          });
-          LvcUI.Bus.on('getTime', () => {
-            return new Date().toLocaleString();
-          });
-        }
-        // 监听 hashchange
-        window.addEventListener('hashchange', () => {
-          this.currentHash = location.hash;
-        });
-        // 监听 resize
-        window.addEventListener('resize', () => {
-          this.winW = window.innerWidth;
-          this.winH = window.innerHeight;
-        });
-        // 初始绘制拓扑
-        this.$nextTick(() => this.drawTopo());
       },
       methods: {
         // 侧边栏导航：阻止默认锚点跳转，仅做垂直平滑滚动，避免水平滚动条右移
@@ -2005,220 +1502,54 @@ LvcUI.exportToExcel({
         // dialog
         onDialogConfirm() {
           if (!this.dialogInput) {
-            LvcUI.LvcMessage.warning('请输入内容');
+            KivaUI.LvcMessage.warning('请输入内容');
             return;
           }
-          LvcUI.LvcMessage.success('提交成功: ' + this.dialogInput);
+          KivaUI.LvcMessage.success('提交成功: ' + this.dialogInput);
           this.dialogVisible = false;
           this.dialogInput = '';
         },
         showCmdDialog() {
-          LvcUI.lvcDialog.show({
+          KivaUI.lvcDialog.show({
             title: '命令式对话框',
             content: '这是通过 lvcDialog.show() 调用的对话框',
             onConfirm: () => {
-              LvcUI.LvcMessage.success('确认');
+              KivaUI.LvcMessage.success('确认');
             }
           });
         },
         showConfirmDialog() {
-          LvcUI.lvcDialog.show({
+          KivaUI.lvcDialog.show({
             title: '确认删除',
             content: '确定要删除这条记录吗？此操作不可撤销。',
             confirmText: '删除',
             cancelText: '取消',
             onConfirm: async () => {
-              LvcUI.LvcLoading.show('正在删除...');
+              KivaUI.LvcLoading.show('正在删除...');
               await new Promise(r => setTimeout(r, 1000));
-              LvcUI.LvcLoading.close();
-              LvcUI.LvcMessage.success('删除成功');
+              KivaUI.LvcLoading.close();
+              KivaUI.LvcMessage.success('删除成功');
             }
           });
         },
-        // bus
-        busEmit() {
-          LvcUI.Bus.emit('test', { msg: 'hello', time: Date.now() });
-        },
-        async busRequest() {
-          try {
-            const result = await LvcUI.Bus.request('getTime');
-            this.busLog = `[Bus.request] 响应: ${result}`;
-          } catch (e) {
-            this.busLog = `[Bus.request] 超时或无响应`;
-          }
-        },
-        // fetch
-        async testFetch() {
-          if (typeof LvcUI === 'undefined' || !LvcUI.createFetch) {
-            this.fetchLog = 'createFetch 不可用';
-            return;
-          }
-          const http = LvcUI.createFetch({ baseURL: 'https://httpbin.org' });
-          http.onLoading((count) => {
-            this.fetchLoadingCount = count;
-            this.fetchLoading = count > 0;
-          });
-          try {
-            this.fetchLog = '请求中...';
-            const data = await http.get('/get', { params: { from: 'lvc-ui-demo' } });
-            this.fetchLog = `请求成功:\nurl: ${data.url}\nargs: ${JSON.stringify(data.args)}`;
-          } catch (e) {
-            this.fetchLog = `请求失败: ${e.message}`;
-          }
-        },
-        // router
-        routerPush(name) {
-          location.hash = `#/${name}`;
-          this.currentHash = location.hash;
-        },
-        // socket
-        wsConnect() {
-          if (this.wsConnected) return;
-          if (typeof LvcUI === 'undefined' || !LvcUI.SocketClient) {
-            this.wsLog = 'SocketClient 不可用';
-            return;
-          }
-          try {
-            this.wsLog = `连接中 ${this.wsUrl}...`;
-            this.wsInstance = new LvcUI.SocketClient(this.wsUrl, {
-              maxReconnectAttempts: 2,
-              heartbeatInterval: 10000,
-            });
-            this.wsInstance.on('open', () => {
-              this.wsConnected = true;
-              this.wsLog = `已连接 ${this.wsUrl}`;
-            });
-            this.wsInstance.on('close', () => {
-              this.wsConnected = false;
-              this.wsLog = '连接已关闭';
-            });
-            this.wsInstance.on('error', () => {
-              this.wsLog = '连接错误';
-            });
-            this.wsInstance.on('message', (msg) => {
-              this.wsLog = `收到: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`;
-            });
-          } catch (e) {
-            this.wsLog = `连接异常: ${e.message}`;
-          }
-        },
-        wsClose() {
-          if (this.wsInstance) {
-            this.wsInstance.close();
-            this.wsInstance = null;
-            this.wsConnected = false;
-          }
-        },
-        // canvas
-        drawTopo() {
-          if (typeof LvcUI === 'undefined' || !LvcUI.CanvasTopologyUtils) return;
-          const canvas = this.$refs.topoCanvas;
-          if (!canvas) return;
-          const topo = new LvcUI.CanvasTopologyUtils('topoCanvas', '.demo-card');
-          topo.init();
-          topo.clear();
-          // 节点
-          topo.drawNode(200, 80, 18, '#00e5ff', '入口', false, 30, 12);
-          topo.drawNode(450, 50, 18, '#4caf50', '服务A', false, 30, 12);
-          topo.drawNode(450, 130, 18, '#ff9800', '服务B', false, 30, 12);
-          topo.drawNode(700, 90, 18, '#e91e63', '出口', false, 30, 12);
-          // 静态连线
-          topo.drawDashLine([[218, 80], [432, 50]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
-          topo.drawDashLine([[218, 80], [432, 130]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
-          topo.drawDashLine([[468, 50], [682, 90]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
-          topo.drawDashLine([[468, 130], [682, 90]], { color: 'rgba(18,187,237,0.4)', width: 1.5, dash: [4, 4] });
-          this._topoInstance = topo;
-        },
-        toggleTopoAnim() {
-          this.topoAnim = !this.topoAnim;
-          if (this.topoAnim) {
-            const animate = () => {
-              if (!this.topoAnim || !this._topoInstance) return;
-              const topo = this._topoInstance;
-              topo.clear();
-              topo.drawNode(200, 80, 18, '#00e5ff', '入口', false, 30, 12);
-              topo.drawNode(450, 50, 18, '#4caf50', '服务A', false, 30, 12);
-              topo.drawNode(450, 130, 18, '#ff9800', '服务B', false, 30, 12);
-              topo.drawNode(700, 90, 18, '#e91e63', '出口', false, 30, 12);
-              const offset = Date.now() / 30;
-              topo.drawFlowLine([[218, 80], [432, 50]], { offset });
-              topo.drawFlowLine([[218, 80], [432, 130]], { offset: offset + 10 });
-              topo.drawFlowLine([[468, 50], [682, 90]], { offset });
-              topo.drawFlowLine([[468, 130], [682, 90]], { offset: offset + 10 });
-              this.topoAnimId = requestAnimationFrame(animate);
-            };
-            animate();
-          } else {
-            if (this.topoAnimId) cancelAnimationFrame(this.topoAnimId);
-            this.drawTopo();
-          }
-        },
         // loading
         showLoading() {
-          LvcUI.LvcLoading.show();
-          setTimeout(() => LvcUI.LvcLoading.close(), 2000);
+          KivaUI.LvcLoading.show();
+          setTimeout(() => KivaUI.LvcLoading.close(), 2000);
         },
         showLoadingText() {
-          const inst = LvcUI.LvcLoading.show('数据加载中...');
+          const inst = KivaUI.LvcLoading.show('数据加载中...');
           setTimeout(() => inst.setText('即将完成...'), 1000);
           setTimeout(() => inst.close(), 2000);
         },
         closeLoading() {
-          LvcUI.LvcLoading.close();
+          KivaUI.LvcLoading.close();
         },
         // message
-        msgSuccess() { LvcUI.LvcMessage.success('操作成功'); },
-        msgWarning() { LvcUI.LvcMessage.warning('请注意风险'); },
-        msgInfo() { LvcUI.LvcMessage.info('这是一条提示信息'); },
-        msgError() { LvcUI.LvcMessage.error('操作失败，请重试'); },
-        // exportExcel
-        async exportCSV() {
-          if (typeof LvcUI === 'undefined' || !LvcUI.exportToExcel) {
-            this.exportLog = 'exportToExcel 不可用';
-            return;
-          }
-          try {
-            await LvcUI.exportToExcel({
-              fileName: this.exportData.fileName,
-              headers: this.exportData.headers,
-              data: this.exportData.data,
-              format: 'csv'
-            });
-            this.exportLog = `[exportToExcel] CSV 导出成功：${this.exportData.fileName}.csv`;
-          } catch (e) {
-            this.exportLog = `[exportToExcel] 导出失败: ${e.message}`;
-          }
-        },
-        async exportXLSX() {
-          if (typeof LvcUI === 'undefined' || !LvcUI.exportToExcel) {
-            this.exportLog = 'exportToExcel 不可用';
-            return;
-          }
-          // XLSX 格式依赖外部 xlsx-js-style 库；不存在时给出友好提示，但仍尝试调用以让用户看到效果
-          if (typeof window.XLSX === 'undefined') {
-            LvcUI.LvcMessage.warning('请先引入 xlsx-js-style 库');
-          }
-          try {
-            await LvcUI.exportToExcel({
-              fileName: this.exportData.fileName,
-              headers: this.exportData.headers,
-              data: this.exportData.data,
-              format: 'xlsx',
-              colWidth: { 1: 20, 2: 12, 3: 16 },
-              cellStyle: {
-                alignment: { vertical: 'center', horizontal: 'center' },
-                font: { name: 'Calibri', sz: 11, bold: false }
-              }
-            });
-            this.exportLog = `[exportToExcel] XLSX 导出成功：${this.exportData.fileName}.xlsx`;
-          } catch (e) {
-            this.exportLog = `[exportToExcel] 导出失败: ${e.message}`;
-          }
-        },
-      },
-      beforeDestroy() {
-        if (this.topoAnimId) cancelAnimationFrame(this.topoAnimId);
-        if (this.wsInstance) this.wsInstance.close();
+        msgSuccess() { KivaUI.LvcMessage.success('操作成功'); },
+        msgWarning() { KivaUI.LvcMessage.warning('请注意风险'); },
+        msgInfo() { KivaUI.LvcMessage.info('这是一条提示信息'); },
+        msgError() { KivaUI.LvcMessage.error('操作失败，请重试'); },
       }
     });
   </script>
